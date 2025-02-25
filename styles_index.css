@@ -9,6 +9,12 @@
     animation: gradient-animation 18s ease infinite;
 }
 
+.hero2{
+  background: linear-gradient(300deg, #e6ffff, #ffffff73,#ffffff);
+  background-size: 100% 100%;
+  animation: gradient-animation 18s ease infinite;
+}
+
 @keyframes gradient-animation {
   0% {
     background-position: 0% 50%;
@@ -74,4 +80,9 @@
   font-family: "Poppins", serif;
   font-weight: 400;
   font-style: normal;
+}
+
+/*FOOTER CONTACT*/  
+.footer_contact{
+margin-block-start: 110px; 
 }
