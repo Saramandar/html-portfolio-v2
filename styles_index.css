@@ -1,7 +1,10 @@
-.profile{
-    border-radius: 50%;
-    padding-right: 8px;
-   }
+/* Desktop/Laptop default */
+.profile {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
    .hero{
     background: linear-gradient(300deg, #ffffff, #827f6184, #45422a73);
@@ -32,6 +35,14 @@
 }
 .navbar{
     background-color: #09121F;
+}
+
+/* Mobile & tablet only (Bootstrap lg breakpoint < 992px) */
+@media (max-width: 991.98px) {
+  .profile {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 .feature_icon{
@@ -108,3 +119,23 @@ margin-block-start: 110px;
 .custom-gutter-cards{
   --bs-gutter-x: 15rem;
 }
+
+/* Remove default p margins inside icon-text items; tighten spacing */
+.icon-text-container p { 
+  margin: 0; 
+  line-height: 1.1;
+}
+
+/* Optional: slightly reduce the gap between icon and label */
+.icon-text-container .bi { 
+  display: block; 
+  margin-bottom: .25rem; 
+}
+
+/* Ensure consistent navbar height and vertical centering */
+.navbar-row {
+  min-height: 70px; /* apply this class to your row container if you like */
+}
+
+#mobileMenu .nav-link { padding-left: .25rem; padding-right: .25rem; }
+#mobileMenu .bi { min-width: 20px; }

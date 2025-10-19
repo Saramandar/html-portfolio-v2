@@ -1,0 +1,6 @@
+To be able to see the mobile view in Safara do the following: 
+
+1. Right click one of the HTMLs and "Open with Live Server"
+2. Now the address in Safari, MacBook should look like this: http://127.0.0.1:5500/index.html. 5500 indicates the Port.
+3. Next find out the IP Adress of the connection between the MacBook and the Interne. System Setting > Network > Wi-Fi > Click on "Details" of your connected Network > and copy the IP Address.
+4. Paste that IP Address into your phones Safari Including :5500 in the end to open up a live Mobile Preview of the Website.
