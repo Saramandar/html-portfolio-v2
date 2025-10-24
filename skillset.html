@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="./styles_index.css" />
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 page-fade">
   <!-- NAVBAR -->
   <div class="hero2">
     <div class="px-3 py-2 text-bg-dark border-bottom">
@@ -237,6 +237,7 @@
     <ul class="nav justify-content-center border-bottom pb-3 mb-3">
       <li class="nav-item"><a href="./index.html" class="nav-link px-2 text-white">Home</a></li>
       <li class="nav-item"><a href="./contact.html" class="nav-link px-2 text-white">Contact</a></li>
+      <li class="nav-item"><a href="./legal.html" class="nav-link px-2 text-white">Legal Notice</a></li>
     </ul>
     <p class="text-center text-white">© 2025 Anastasios Binas</p>
   </footer>
@@ -254,5 +255,27 @@
       c.hide();
     });
   </script>
+
+   <!--FADE ID SCRIPT START-->
+  <script>
+  function enableFade() {
+    // ensure we paint once at opacity:0 before switching to 1
+    requestAnimationFrame(() => {
+      document.body.classList.add('is-loaded');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enableFade);
+  } else {
+    enableFade();
+  }
+
+  // Handle back/forward cache restores
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) enableFade();
+  });
+</script>
+ <!--FADE ID SCRIPT END-->
 </body>
 </html>

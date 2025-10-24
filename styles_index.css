@@ -139,3 +139,22 @@ margin-block-start: 110px;
 
 #mobileMenu .nav-link { padding-left: .25rem; padding-right: .25rem; }
 #mobileMenu .bi { min-width: 20px; }
+
+/* Page fade-in */
+body.page-fade {
+  opacity: 0;
+  background: #fff;               /* start from white */
+  transition: opacity 1000ms ease; /* transition must be here */
+}
+
+body.page-fade.is-loaded {
+  opacity: 1;
+}
+
+/* Optional: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  body.page-fade {
+    opacity: 1;
+    transition: none;
+  }
+}
