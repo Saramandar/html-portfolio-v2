@@ -28,7 +28,7 @@
 
   <!-- NAVBAR -->
   <div class="hero2">
-    <div class="px-3 py-2 text-bg-dark border-bottom">
+    <div class="px-3 py-2 text-bg-dark">
       <div class="container">
 
         <!-- Main navbar row -->
@@ -173,29 +173,56 @@
   <!-- NAVBAR END -->
 
   <!-- HERO -->
-  <div class="hero">
-    <div class="container col-xxl-8 px-4 py-5">
-      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-        <div class="col-10 col-sm-8 col-lg-6">
-          <!-- VIDEO -->
-          <video class="work-video" autoplay loop muted playsinline style="width: 100%; max-width: 600px">
-            <source src="./assets/working_office.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="col-lg-6">
-          <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3 poppins-light">Welcome to my Portfolio</h1>
-          <p class="lead poppins-regular">
-            Hi, I’m Tasos, a <b>Quality Assurance Analyst</b> with a passion for <b>Full Stack Web Development.</b> <br/>
-            My journey into development stems from my fascination with data and my drive to craft creative, efficient, and user-friendly solutions for businesses. Currently, I’m mastering Full Stack Development to deliver top-notch skills that can empower companies and startups to thrive.
-            <br/><br/>
-            I’m known for my <b>problem-solving expertise</b>, ability to bring <b>innovative</b> ideas when needed, and my focus on creating <b>clear, accessible,</b> and <b>high-quality</b> work. Whether it’s building insightful data-driven charts or collaborating on projects, I pride myself on being adaptable, detail-oriented, and highly reliable.
-            Feel free to explore my work and see how I can be the right candidate to elevate your team or project. <br/><br/>
-            <b>Let’s create something extraordinary together!</b>
-          </p>
+<section class="hp-stage position-relative overflow-hidden">
+  <!-- Background video -->
+  <div class="hp-stage-media">
+  <video class="hp-stage-video" autoplay muted loop playsinline webkit-playsinline preload="auto"
+       poster="./assets/working_office_poster.jpg"
+       src="./assets/videos/Hero_Vid_v1_web.mp4"
+       aria-label="Working in an office"></video>
+  <div class="hp-stage-overlay"></div>
+
+  <!-- Controls (new) -->
+  <div class="hp-stage-controls">
+    <button type="button"
+            class="hp-toggle-btn"
+            aria-pressed="false"
+            aria-label="Pause background video"
+            title="Pause">⏸</button>
+  </div>
+</div>
+  
+  <!-- Content -->
+  <div class="hp-stage-content container">
+    <div class="row justify-content-start">
+      <div class="col-12 col-lg-8 col-xl-7">
+        <h1 class="display-5 fw-semibold text-white lh-1 mb-3 poppins-light">
+          Welcome to my Portfolio
+        </h1>
+        <p class="lead text-white poppins-regular mb-4">
+          Hi, I’m Tasos, a <b>Quality Assurance Analyst</b> with a passion for
+          <b>Full Stack Web Development</b>.<br/>
+          My journey into development stems from my fascination with data and my drive to craft
+          creative, efficient, and user-friendly solutions for businesses. Currently, I’m
+          mastering Full Stack Development to deliver top-notch skills that can empower
+          companies and startups to thrive.
+          <br/><br/>
+          I’m known for my <b>problem-solving expertise</b>, ability to bring <b>innovative</b> ideas,
+          and a focus on <b>clear, accessible, high-quality</b> work. Whether it’s building data-driven
+          charts or collaborating on projects, I’m adaptable, detail-oriented, and reliable.
+          <br/><br/>
+          <b>Let’s create something extraordinary together!</b>
+        </p>
+
+        <div class="d-flex gap-3 flex-wrap">
+        
+          <a href="./contact.html" class="btn btn-outline-light btn-lg">Contact Me</a>
         </div>
       </div>
     </div>
   </div>
+</section>
+<!-- HERO END -->
 
   <!-- DIV for extra padding -->
   <div class="py-1 py-lg-4"></div>
@@ -295,6 +322,149 @@
 </script>
  <!--FADE ID SCRIPT END-->
 
+<!--VIDEO BLEEDING START-->
+<script>
+  (function () {
+    const video = document.querySelector('.hp-stage-video');
+    const toggle = document.querySelector('.hp-stage-toggle');
+    if (!video || !toggle) return;
 
+    const setState = (playing) => {
+      toggle.setAttribute('aria-pressed', !playing ? 'true' : 'false');
+      toggle.textContent = playing ? '⏸ Pause' : '▶️ Play';
+      toggle.setAttribute('aria-label', playing ? 'Pause background video' : 'Play background video');
+    };
+
+    setState(true); // starts playing by default
+
+    toggle.addEventListener('click', async () => {
+      try {
+        if (!video.paused) {
+          video.pause();
+          setState(false);
+        } else {
+          await video.play();
+          setState(true);
+        }
+      } catch (e) {
+        console.warn('Video play/pause failed:', e);
+      }
+    });
+  })();
+</script>
+
+<script>
+(function () {
+  const video  = document.querySelector('.hp-stage-video');
+  const button = document.querySelector('.hp-toggle-btn');
+  if (!video || !button) return;
+
+  // Remember if the user explicitly paused
+  const setUserPaused = (v) => v ? (button.dataset.userPaused = '1') : delete button.dataset.userPaused;
+  const userPaused = () => button.dataset.userPaused === '1';
+
+  // Cache the actual source URL (from <video src>, <source>, or currentSrc)
+  const getSrc = () => {
+    const s = video.getAttribute('src');
+    if (s) return s;
+    const child = video.querySelector('source');
+    if (child && child.src) return child.src;
+    if (video.currentSrc) return video.currentSrc;
+    return '';
+  };
+  const baseSrc = getSrc();
+
+  const setUI = (playing) => {
+    button.textContent = playing ? '⏸' : '▶';
+    button.title = playing ? 'Pause' : 'Play';
+    button.setAttribute('aria-label', playing ? 'Pause background video' : 'Play background video');
+    button.setAttribute('aria-pressed', (!playing).toString());
+  };
+
+  const tryPlay = () =>
+    video.play().then(() => setUI(true)).catch((e) => {
+      setUI(false);
+      console.warn('[HERO VIDEO] play() rejected:', e?.name || e);
+    });
+
+  // Hard reload the media pipeline (for bfcache / WebKit quirks)
+  const hardResume = () => {
+    if (userPaused()) return; // don't override user's pause
+
+    // Ensure autoplay conditions
+    video.muted = true;
+    video.playsInline = true; // for Safari/iOS
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+
+    // If pipeline looks empty or it's paused on restore, reload source
+    try {
+      const src = baseSrc || getSrc();
+      // Full reset: drop src, load, then reassign and play
+      video.pause();
+      video.removeAttribute('src');
+      // Remove any <source> children to avoid stale states
+      const sources = video.querySelectorAll('source');
+      sources.forEach(n => n.parentNode.removeChild(n));
+      video.load();
+
+      // Reassign source directly to <video> (more reliable than <source> after bfcache)
+      if (src) video.src = src;
+
+      // Tiny nudge for Safari to wake decoders
+      setTimeout(() => {
+        try { video.currentTime = (video.currentTime || 0) + 0.001; } catch (_) {}
+        tryPlay();
+      }, 60);
+    } catch (e) {
+      console.warn('[HERO VIDEO] hardResume failed:', e);
+      tryPlay();
+    }
+  };
+
+  // Initial autoplay
+  if (video.muted && (video.autoplay || video.getAttribute('autoplay') !== null)) {
+    tryPlay();
+  }
+  video.addEventListener('loadedmetadata', () => { if (!userPaused()) tryPlay(); });
+
+  video.addEventListener('playing', () => setUI(true));
+  video.addEventListener('pause',   () => setUI(false));
+
+  // Button toggle
+  button.addEventListener('click', async () => {
+    if (video.paused) {
+      setUserPaused(false);
+      await tryPlay();
+    } else {
+      setUserPaused(true);
+      video.pause();
+    }
+  });
+
+  // Resume when page becomes visible again
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && video.paused && video.muted && !userPaused()) {
+      hardResume();
+    }
+  });
+
+  // Crucial: when coming back via browser Back/Forward (bfcache)
+  window.addEventListener('pageshow', (evt) => {
+    // On many engines, evt.persisted === true means bfcache; still resume even if false
+    if (video.paused && video.muted && !userPaused()) {
+      hardResume();
+    }
+  });
+
+  // Extra safety for focus regain / SPA navs
+  window.addEventListener('focus', () => {
+    if (video.paused && video.muted && !userPaused()) {
+      hardResume();
+    }
+  });
+})();
+</script>
+<!--VIDEO BLEEDING END-->
 </body>
 </html>
