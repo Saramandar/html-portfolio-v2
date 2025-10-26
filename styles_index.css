@@ -18,6 +18,12 @@
   animation: gradient-animation 18s ease infinite;
 }
 
+@media (min-width: 992px) {
+  .hp-stage-content {
+    padding-left: 0.5rem;   /* default Bootstrap container has ~1.5rem; add more */
+  }
+}
+
 @keyframes gradient-animation {
   0% {
     background-position: 0% 50%;
@@ -35,8 +41,12 @@
 }
 .navbar{
     background-color: #09121F;
+      margin-bottom: 0 !important;
 }
-
+.hp-stage {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
 /* Mobile & tablet only (Bootstrap lg breakpoint < 992px) */
 @media (max-width: 991.98px) {
   .profile {
@@ -157,4 +167,173 @@ body.page-fade.is-loaded {
     opacity: 1;
     transition: none;
   }
+}
+
+/* HERO VIDEO */
+/* Background video hero */
+.hp-stage {
+  min-height: 70vh;         /* Tweak height as needed */
+  display: grid;
+  place-items: stretch;
+  background: #000;         /* Fallback bg */
+}
+
+.hp-stage-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hp-stage-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* Fill the section nicely */
+}
+
+/* Subtle gradient/dim overlay for text readability */
+.hp-stage-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+}
+
+.hp-stage-content {
+  position: relative;
+  z-index: 1;
+  padding-top: clamp(4rem, 8vh, 8rem);
+  padding-bottom: clamp(3rem, 6vh, 6rem);
+}
+
+/* Make large headlines wrap nicely on mobile */
+.hp-stage h1 {
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Button tweak for better contrast on dark */
+.hp-stage .btn-outline-light {
+  border-width: 2px;
+}
+
+/* Respect prefers-reduced-motion: pause video & show poster */
+@media (prefers-reduced-motion: reduce) {
+  .hp-stage-video {
+    animation: none !important;
+  }
+  .hp-stage-video[autoplay] {
+    -webkit-animation: none !important;
+  }
+}
+
+/* Control container: bottom-left over the video */
+.hp-stage-controls {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 2;                /* above overlay & video */
+}
+
+/* Small round toggle button */
+.hp-toggle-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  cursor: pointer;
+  line-height: 1;
+  font-size: 16px;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.hp-toggle-btn:hover { transform: scale(1.06); }
+.hp-toggle-btn:active { transform: scale(0.98); }
+.hp-toggle-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Ensure overlay doesn't block clicks */
+.hp-stage-overlay { pointer-events: none; }
+
+/* Mobile & tablet: stack video on top, text below */
+@media (max-width: 991.98px) {
+  .hp-stage {
+    display: block;
+    min-height: unset;         /* no forced tall section on mobile */
+    background: transparent;   /* let normal page bg show for text */
+  }
+
+  /* Make the video a normal block element */
+  .hp-stage-media {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    height: auto;
+    margin-bottom: 1rem;       /* space between video and text */
+  }
+
+  .hp-stage-video {
+    position: relative;
+    width: 100%;
+    height: auto;              /* stop covering the whole section */
+    object-fit: cover;
+    aspect-ratio: 16 / 9;      /* keeps a nice shape */
+  }
+
+  /* Overlay not needed when video is not behind text */
+  .hp-stage-overlay { display: none; }
+
+  /* Content flows under the video like normal page content */
+  .hp-stage-content {
+    position: static;
+    z-index: 1;
+    padding-top: 0;
+    padding-bottom: 2rem;
+  }
+
+  /* Your headings/paragraphs currently use text-white; flip to dark on mobile */
+  .hp-stage-content .text-white { color: #111 !important; }
+
+  /* Keep the small round control button bottom-left over the video */
+  .hp-stage-controls {
+    position: absolute;
+    left: .75rem;
+    bottom: .75rem;
+    z-index: 2;
+  }
+}
+/* HERO VIDEO */
+
+/* Prevent "Port-folio" on mobile */
+@media (max-width: 991.98px) {
+  .hp-stage h1 {
+    hyphens: none;
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    word-break: normal;         /* don't break inside words */
+    overflow-wrap: break-word;  /* still wrap long lines safely */
+    /* optional: scale headline so it fits nicer */
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    line-height: 1.15;
+  }
+}
+
+/* (Optional everywhere) nicer multi-line breaks when supported */
+@supports (text-wrap: balance) {
+  .hp-stage h1 { text-wrap: balance; }
+}
+
+body {
+  margin: 0;
+  background-color: #000; /* optional: matches your hero background so no white flashes */
 }
