@@ -337,3 +337,21 @@ body {
   margin: 0;
   background-color: #000; /* optional: matches your hero background so no white flashes */
 }
+
+/* SKILLSET PAGE ITEMS */
+.skill-icon {
+  width: 48px;
+  height: auto;
+  transition: transform 150ms ease;
+}
+
+.skill-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.skill-item:hover .skill-icon {
+  transform: scale(1.35);
+}
