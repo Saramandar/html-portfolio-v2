@@ -1,0 +1,11 @@
+﻿Date;Description;Category;Type;Amount;Payment Method;Mood;Year;Week;Month
+46024; Salary January ; Income ; Income ;1200; Bank Transfer ; Neutral ;2026;W1;January
+46024; Rent January ; Rent / Utilities ; Expense ;450; Bank Transfer ; Neutral ;2026;W1;January
+46025; Supermarket ; Groceries ; Expense ;68; Card ; Calm ;2026;W1;January
+46025; Coffee to go ; Eating Out ; Expense ;4,5; Cash ; Good ;2026;W1;January
+46026; Fast food dinner ; Eating Out ; Expense ;18; Card ; Stressed ;2026;W2;January
+46027; Netflix ; Subscriptions ; Expense ;10; Card ; Neutral ;2026;W2;January
+46028; Lunch outside ; Eating Out ; Expense ;12; Card ; Tired ;2026;W2;January
+46029; Fuel ; Transport ; Expense ;40; Card ; Neutral ;2026;W2;January
+46030; Pharmacy ; Health ; Expense ;22; Card ; Calm ;2026;W2;January
+46031; Savings transfer ; Savings ; Expense ;100; Bank Transfer ; Calm ;2026;W2;January

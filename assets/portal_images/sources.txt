@@ -1,0 +1,12 @@
+Portal menu image sources
+
+skillset-tech.jpg
+https://images.unsplash.com/photo-1518770660439-4636190af475
+
+work-coding.jpg
+https://images.unsplash.com/photo-1515879218367-8466d910aaa4
+
+projects-studio.jpg
+https://images.unsplash.com/photo-1497366754035-f200968a6e72
+
+Images were downloaded locally for offline site delivery.
