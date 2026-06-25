@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A.Binas Portfolio - Contact</title>
 
-  <!-- GOOGLE FONTS -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+  <!-- LOCAL FONTS -->
+  <link href="./assets/vendor/fonts/poppins/poppins.css" rel="stylesheet">
 
   <!-- BOOTSTRAP CSS (v5.3.8) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="./assets/vendor/bootstrap/bootstrap-5.3.8.min.css" rel="stylesheet">
 
   <link rel="stylesheet" href="./styles_index.css"/>
 </head>
@@ -194,40 +192,9 @@
     <p class="text-center text-white">© 2025 Anastasios Binas</p>
   </footer>
 
-  <!-- Bootstrap JS (v5.3.8) — no SRI so collapse works -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!--JAVASCRIPT-->
+<script src="./assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
-  <!-- Optional: auto-close mobile menu after clicking a link -->
-  <script>
-    document.addEventListener('click', function (e) {
-      const link = e.target.closest('#mobileMenu a.nav-link');
-      if (!link) return;
-      const menu = document.getElementById('mobileMenu');
-      const c = bootstrap.Collapse.getOrCreateInstance(menu);
-      c.hide();
-    });
-  </script>
-
-   <!--FADE ID SCRIPT START-->
-  <script>
-  function enableFade() {
-    // ensure we paint once at opacity:0 before switching to 1
-    requestAnimationFrame(() => {
-      document.body.classList.add('is-loaded');
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', enableFade);
-  } else {
-    enableFade();
-  }
-
-  // Handle back/forward cache restores
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) enableFade();
-  });
-</script>
- <!--FADE ID SCRIPT END-->
+<script src="./js_index.js"></script>
 </body>
 </html>

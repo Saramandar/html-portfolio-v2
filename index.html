@@ -5,26 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A.Binas Portfolio - About Me</title>
 
-  <!-- GOOGLE FONTS -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap"
-    rel="stylesheet"
-  />
+  <!-- LOCAL FONTS -->
+  <link href="./assets/vendor/fonts/poppins/poppins.css" rel="stylesheet" />
 
   <!-- BOOTSTRAP CSS (v5.3.3) -->
   <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    crossorigin="anonymous"
-  />
+    href="./assets/vendor/bootstrap/bootstrap.min.css"
+    rel="stylesheet"/>
 
   <link rel="stylesheet" href="./styles_index.css"/>
 </head>
 
-<body class="d-flex flex-column min-vh-100 page-fade">
+<body class="d-flex flex-column min-vh-100 page-fade has-loader has-portal">
+
+  <!-- LOADING SCREEN -->
+  <div class="site-loader" aria-live="polite" aria-label="Portfolio loading">
+    <div class="loader-panel">
+      <div class="loader-key-pattern loader-key-pattern-top" aria-hidden="true"></div>
+      <img class="loader-logo" src="./assets/logo/Logo_v1.1 Black.svg" alt="Anastasios Binas logo">
+      <div class="loader-status poppins-regular">
+        <span>Curating Portfolio</span>
+        <span class="loader-percent">00%</span>
+      </div>
+      <div class="loader-bar" aria-hidden="true">
+        <span class="loader-bar-fill"></span>
+      </div>
+      <div class="loader-key-pattern loader-key-pattern-bottom" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- ORB MENU -->
+  <section class="portal-menu" aria-label="Portfolio navigation">
+    <div class="portal-shell">
+      <div class="portal-orb-wrap" aria-hidden="true">
+        <canvas class="portal-orb-canvas"></canvas>
+        <div class="portal-orb-halo"></div>
+      </div>
+
+      <div class="portal-copy">
+        <p class="portal-kicker poppins-regular">Select Destination</p>
+        <div class="portal-control-row">
+          <button class="portal-arrow portal-arrow-prev" type="button" aria-label="Previous menu item">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <a class="portal-main-link poppins-regular" href="./index.html" data-portal-link>About Me</a>
+          <button class="portal-arrow portal-arrow-next" type="button" aria-label="Next menu item">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+        <p class="portal-description poppins-light" data-portal-description>
+          Enter the personal portfolio overview.
+        </p>
+      </div>
+    </div>
+  </section>
 
   <!-- NAVBAR -->
   <div class="hero2">
@@ -172,12 +206,16 @@
     </div> <!-- /hero2 -->
   <!-- NAVBAR END -->
 
-  <!-- HERO -->
-<section class="hp-stage position-relative overflow-hidden">
+  <!-- ABOUT EXPERIENCE -->
+<main class="about-suite">
+<section class="hp-stage about-hero position-relative overflow-hidden" aria-label="Portfolio introduction">
+  <canvas class="hp-3d-canvas" aria-hidden="true"></canvas>
+  <div class="hp-grid-field" aria-hidden="true"></div>
+  <div class="hp-scanline" aria-hidden="true"></div>
+
   <!-- Background video -->
   <div class="hp-stage-media">
   <video class="hp-stage-video" autoplay muted loop playsinline webkit-playsinline preload="auto"
-       poster="./assets/working_office_poster.jpg"
        src="./assets/videos/Hero_Vid_v1_web.mp4"
        aria-label="Working in an office"></video>
   <div class="hp-stage-overlay"></div>
@@ -194,277 +232,155 @@
   
   <!-- Content -->
   <div class="hp-stage-content container">
-    <div class="row justify-content-start">
-      <div class="col-12 col-lg-8 col-xl-7">
-        <h1 class="display-5 fw-semibold text-white lh-1 mb-3 poppins-light">
-          Welcome to my Portfolio
+    <div class="row align-items-center justify-content-between g-5">
+      <div class="col-12 col-lg-7 col-xl-6 about-hero-copy">
+        <div class="hp-eyebrow-strip poppins-regular" aria-hidden="true">
+          <span>About Me</span>
+          <span>Quality First</span>
+          <span>Full Stack Mindset</span>
+        </div>
+        <p class="hp-kicker poppins-regular mb-3">QA Analyst & Full Stack Developer</p>
+        <h1 class="display-5 fw-semibold lh-1 mb-3 poppins-light">
+          Precision, taste and dependable digital execution.
         </h1>
-        <p class="lead text-white poppins-regular mb-4">
-          Hi, I’m Tasos, a <b>Quality Assurance Analyst</b> with a passion for
-          <b>Full Stack Web Development</b>.<br/>
-          My journey into development stems from my fascination with data and my drive to craft
-          creative, efficient, and user-friendly solutions for businesses. Currently, I’m
-          mastering Full Stack Development to deliver top-notch skills that can empower
-          companies and startups to thrive.
-          <br/><br/>
-          I’m known for my <b>problem-solving expertise</b>, ability to bring <b>innovative</b> ideas,
-          and a focus on <b>clear, accessible, high-quality</b> work. Whether it’s building data-driven
-          charts or collaborating on projects, I’m adaptable, detail-oriented, and reliable.
-          <br/><br/>
-          <b>Let’s create something extraordinary together!</b>
+        <p class="lead poppins-regular mb-4">
+          Hi, I’m Tasos. I combine a quality-first mindset with hands-on full stack development
+          to create clean, accessible and dependable digital products.
         </p>
+        <div class="hp-highlights poppins-regular mb-4" aria-label="Key strengths">
+          <span>Quality assurance</span>
+          <span>Web development</span>
+          <span>Data-driven thinking</span>
+        </div>
 
         <div class="d-flex gap-3 flex-wrap">
-        
-          <a href="./contact.html" class="btn btn-outline-light btn-lg">Contact Me</a>
+          <a href="./contact.html" class="btn btn-primary btn-lg hp-primary-btn">Get in Touch</a>
+          <a href="./projects.html" class="btn btn-outline-light btn-lg">View Projects</a>
         </div>
+      </div>
+
+      <div class="col-12 col-lg-5">
+        <aside class="about-portrait-panel" aria-label="Profile summary">
+          <div class="about-portrait-frame">
+            <img src="./assets/profile_picture v3.jpg" alt="Portrait of Anastasios Binas">
+          </div>
+          <div class="about-signature">
+            <span class="about-signature-mark poppins-regular">AB</span>
+            <div>
+              <strong class="poppins-regular">Anastasios Binas</strong>
+              <span class="poppins-light">QA Analyst & Full Stack Developer</span>
+            </div>
+          </div>
+          <div class="about-proof-grid">
+            <div>
+              <span>QA</span>
+              <p>Quality assurance</p>
+            </div>
+            <div>
+              <span>FS</span>
+              <p>Full stack development</p>
+            </div>
+            <div>
+              <span>UX</span>
+              <p>User-friendly execution</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </div>
 </section>
-<!-- HERO END -->
-
-  <!-- DIV for extra padding -->
-  <div class="py-1 py-lg-4"></div>
-
-  <!-- FEATURES -->
-  <div class="row g-4 py-5 row-cols-1 row-cols-lg-3 mx-lg-5 mx-3 my-3">
-    <div class="col d-flex justify-content-center align-items-start">
-      <div class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentcolor" class="feature_icon bi d-block mx-auto" viewBox="0 0 16 16">
-          <path d="M7.987 16a1.53 1.53 0 0 1-1.07-.448L.45 9.082a1.53 1.53 0 0 1 0-2.165L6.917.45a1.53 1.53 0 0 1 2.166 0l6.469 6.468A1.53 1.53 0 0 1 16 8.013a1.53 1.53 0 0 1-.448 1.07l-6.47 6.469A1.53 1.53 0 0 1 7.988 16zM7.639 1.17 4.766 4.044 8 7.278l3.234-3.234L8.361 1.17a.51.51 0 0 0-.722 0M8.722 8l3.234 3.234 2.873-2.873c.2-.2.2-.523 0-.722l-2.873-2.873zM8 8.722l-3.234 3.234 2.873 2.873c.2.2.523.2.722 0l2.873-2.873zM7.278 8 4.044 4.766 1.17 7.639a.51.51 0 0 0 0 .722l2.874 2.873z"/>
-        </svg>
-      </div>
-      <div>
-        <h3 class="fs-2 text-body-emphasis poppins-regular">Skillset</h3>
-        <p class="poppins-light">My skillset showcases a blend of technical expertise and creative problem-solving. Each skill is a testament to my commitment to excellence and continuous improvement.</p>
-        <a href="./skillset.html" class="feature_btn btn btn-secondary poppins-regular">Explore Skills</a>
-      </div>
-    </div>
-
-    <div class="col d-flex justify-content-center align-items-start">
-      <div class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentcolor" class="feature_icon bi d-block mx-auto mb-1" viewBox="0 0 16 16">
-          <path d="M4 16s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-5.95a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-          <path d="M2 1a2 2 0 0 0-2 2v9.5A1.5 1.5 0 0 0 1.5 14h.653a5.4 5.4 0 0 1 1.066-2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v9h-2.219c.554.654.89 1.373 1.066 2h.653a1.5 1.5 0 0 0 1.5-1.5V3a2 2 0 0 0-2-2z"/>
-        </svg>
-      </div>
-      <div>
-        <h3 class="fs-2 text-body-emphasis poppins-regular">Work Experience</h3>
-        <p class="poppins-light">My work experience reflects a professional journey marked by diverse roles and significant achievements. Discover the experiences that have honed my abilities and defined my career path.</p>
-        <a href="./work_exp.html" class="feature_btn btn btn-secondary poppins-regular">View Experience</a>
-      </div>
-    </div>
-
-    <div class="col d-flex align-items-start">
-      <div class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-        <!-- Projects icon (three bars, 36px) -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentcolor" class="feature_icon bi d-block mx-auto mb-1" viewBox="0 0 16 16">
-          <path d="M13.5 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm-11-1a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
-          <path d="M6.5 3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1z"/>
-          <path d="M2.5 3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1z"/>
-          <path d="M10.5 3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1z"/>
-        </svg>
-      </div>
-      <div>
-        <h3 class="fs-2 text-body-emphasis poppins-regular">Projects</h3>
-        <p class="poppins-light">My projects illustrate practical applications of innovative ideas and rigorous execution. View detailed examples of my work that demonstrate a dedication to quality and impactful results.</p>
-        <a href="#" class="feature_btn btn btn-secondary poppins-regular">View Projects</a>
+<section class="about-manifesto" aria-label="About me statement">
+  <div class="about-manifesto-inner">
+    <p class="home-section-label poppins-regular">Working Philosophy</p>
+    <div class="about-manifesto-grid">
+      <h2 class="poppins-light">I build for the moment where design, usability and reliability have to hold together.</h2>
+      <div class="about-manifesto-copy">
+        <p class="poppins-light">
+          My work is shaped by a quality-first mindset: I look for weak points early, keep interfaces clear,
+          and turn ideas into digital products that feel considered instead of rushed.
+        </p>
+        <p class="poppins-light">
+          The sweet spot is where precise testing meets hands-on development. That balance helps me think like
+          a user, work like an engineer and polish like a designer.
+        </p>
       </div>
     </div>
   </div>
+</section>
+
+<section class="about-craft" aria-label="Core working principles">
+  <div class="about-craft-grid">
+    <article class="about-craft-card">
+      <span class="about-card-index">01</span>
+      <h3 class="poppins-regular">Clarity before decoration</h3>
+      <p class="poppins-light">Interfaces should look refined, but the structure has to be instantly understandable.</p>
+    </article>
+    <article class="about-craft-card">
+      <span class="about-card-index">02</span>
+      <h3 class="poppins-regular">Quality as a habit</h3>
+      <p class="poppins-light">I approach every screen with the eye of someone who expects edge cases, not just happy paths.</p>
+    </article>
+    <article class="about-craft-card">
+      <span class="about-card-index">03</span>
+      <h3 class="poppins-regular">Tasteful execution</h3>
+      <p class="poppins-light">Good work should feel calm, intentional and durable, even when the technology underneath is complex.</p>
+    </article>
+  </div>
+</section>
+
+<section class="home-features about-pathways" aria-label="Portfolio navigation">
+  <div class="home-features-shell">
+    <div class="home-section-label poppins-regular">Selected Pathways</div>
+    <div class="about-pathway-grid">
+      <a href="./skillset.html" class="about-pathway-card" data-depth-card>
+        <img src="./assets/portal_images/skillset-tech.jpg" alt="">
+        <span class="about-pathway-number">01</span>
+        <h3 class="poppins-regular">Skillset</h3>
+        <p class="poppins-light">My skillset showcases a blend of technical expertise and creative problem-solving.</p>
+        <strong class="poppins-regular">Explore Skills</strong>
+      </a>
+
+      <a href="./work_exp.html" class="about-pathway-card" data-depth-card>
+        <img src="./assets/portal_images/work-coding.jpg" alt="">
+        <span class="about-pathway-number">02</span>
+        <h3 class="poppins-regular">Work Experience</h3>
+        <p class="poppins-light">My work experience reflects a professional journey marked by diverse roles and significant achievements.</p>
+        <strong class="poppins-regular">View Experience</strong>
+      </a>
+
+      <a href="./projects.html" class="about-pathway-card" data-depth-card>
+        <img src="./assets/portal_images/projects-studio.jpg" alt="">
+        <span class="about-pathway-number">03</span>
+        <h3 class="poppins-regular">Projects</h3>
+        <p class="poppins-light">My projects illustrate practical applications of innovative ideas and rigorous execution.</p>
+        <strong class="poppins-regular">View Projects</strong>
+      </a>
+    </div>
+  </div>
+</section>
+</main>
 
   <!-- FOOTER -->
-  <footer class="py-3 mt-auto text-bg-dark">
+  <footer class="py-3 mt-auto text-bg-dark ">
+    <div class="icon-text-container">
     <ul class="nav justify-content-center border-bottom pb-3 mb-3">
       <li class="nav-item"><a href="./index.html" class="nav-link px-2 text-white">Home</a></li>
       <li class="nav-item"><a href="./contact.html" class="nav-link px-2 text-white">Contact</a></li>
       <li class="nav-item"><a href="./legal.html" class="nav-link px-2 text-white">Legal Notice</a></li>
     </ul>
-    <p class="text-center text-white">© 2025 Anastasios Binas</p>
+    <p class="text-center text-white d-flex justify-content-center align-items-center gap-2 mb-0">
+      <span>© 2025 Anastasios Binas | </span>
+      <img src="./assets/logo/Logo_v1_white.svg" alt="Logo" class="footer-logo">
+    </p>
   </footer>
 
-  <!-- BOOTSTRAP JS (v5.3.3) – matches CSS version -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-          crossorigin="anonymous"></script>
 
-  <!-- Optional: Auto-close mobile menu after clicking a link -->
-  <script>
-    document.addEventListener('click', function (e) {
-      const link = e.target.closest('#mobileMenu a.nav-link');
-      if (!link) return;
-      const menu = document.getElementById('mobileMenu');
-      const c = bootstrap.Collapse.getOrCreateInstance(menu);
-      c.hide();
-    });
-  </script>
 
- <!--FADE ID SCRIPT START-->
-  <script>
-  function enableFade() {
-    // ensure we paint once at opacity:0 before switching to 1
-    requestAnimationFrame(() => {
-      document.body.classList.add('is-loaded');
-    });
-  }
+<!--JAVASCRIPT-->
+<script src="./assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', enableFade);
-  } else {
-    enableFade();
-  }
+<script src="./js_index.js"></script>
 
-  // Handle back/forward cache restores
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) enableFade();
-  });
-</script>
- <!--FADE ID SCRIPT END-->
-
-<!--VIDEO BLEEDING START-->
-<script>
-  (function () {
-    const video = document.querySelector('.hp-stage-video');
-    const toggle = document.querySelector('.hp-stage-toggle');
-    if (!video || !toggle) return;
-
-    const setState = (playing) => {
-      toggle.setAttribute('aria-pressed', !playing ? 'true' : 'false');
-      toggle.textContent = playing ? '⏸ Pause' : '▶️ Play';
-      toggle.setAttribute('aria-label', playing ? 'Pause background video' : 'Play background video');
-    };
-
-    setState(true); // starts playing by default
-
-    toggle.addEventListener('click', async () => {
-      try {
-        if (!video.paused) {
-          video.pause();
-          setState(false);
-        } else {
-          await video.play();
-          setState(true);
-        }
-      } catch (e) {
-        console.warn('Video play/pause failed:', e);
-      }
-    });
-  })();
-</script>
-
-<script>
-(function () {
-  const video  = document.querySelector('.hp-stage-video');
-  const button = document.querySelector('.hp-toggle-btn');
-  if (!video || !button) return;
-
-  // Remember if the user explicitly paused
-  const setUserPaused = (v) => v ? (button.dataset.userPaused = '1') : delete button.dataset.userPaused;
-  const userPaused = () => button.dataset.userPaused === '1';
-
-  // Cache the actual source URL (from <video src>, <source>, or currentSrc)
-  const getSrc = () => {
-    const s = video.getAttribute('src');
-    if (s) return s;
-    const child = video.querySelector('source');
-    if (child && child.src) return child.src;
-    if (video.currentSrc) return video.currentSrc;
-    return '';
-  };
-  const baseSrc = getSrc();
-
-  const setUI = (playing) => {
-    button.textContent = playing ? '⏸' : '▶';
-    button.title = playing ? 'Pause' : 'Play';
-    button.setAttribute('aria-label', playing ? 'Pause background video' : 'Play background video');
-    button.setAttribute('aria-pressed', (!playing).toString());
-  };
-
-  const tryPlay = () =>
-    video.play().then(() => setUI(true)).catch((e) => {
-      setUI(false);
-      console.warn('[HERO VIDEO] play() rejected:', e?.name || e);
-    });
-
-  // Hard reload the media pipeline (for bfcache / WebKit quirks)
-  const hardResume = () => {
-    if (userPaused()) return; // don't override user's pause
-
-    // Ensure autoplay conditions
-    video.muted = true;
-    video.playsInline = true; // for Safari/iOS
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-
-    // If pipeline looks empty or it's paused on restore, reload source
-    try {
-      const src = baseSrc || getSrc();
-      // Full reset: drop src, load, then reassign and play
-      video.pause();
-      video.removeAttribute('src');
-      // Remove any <source> children to avoid stale states
-      const sources = video.querySelectorAll('source');
-      sources.forEach(n => n.parentNode.removeChild(n));
-      video.load();
-
-      // Reassign source directly to <video> (more reliable than <source> after bfcache)
-      if (src) video.src = src;
-
-      // Tiny nudge for Safari to wake decoders
-      setTimeout(() => {
-        try { video.currentTime = (video.currentTime || 0) + 0.001; } catch (_) {}
-        tryPlay();
-      }, 60);
-    } catch (e) {
-      console.warn('[HERO VIDEO] hardResume failed:', e);
-      tryPlay();
-    }
-  };
-
-  // Initial autoplay
-  if (video.muted && (video.autoplay || video.getAttribute('autoplay') !== null)) {
-    tryPlay();
-  }
-  video.addEventListener('loadedmetadata', () => { if (!userPaused()) tryPlay(); });
-
-  video.addEventListener('playing', () => setUI(true));
-  video.addEventListener('pause',   () => setUI(false));
-
-  // Button toggle
-  button.addEventListener('click', async () => {
-    if (video.paused) {
-      setUserPaused(false);
-      await tryPlay();
-    } else {
-      setUserPaused(true);
-      video.pause();
-    }
-  });
-
-  // Resume when page becomes visible again
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && video.paused && video.muted && !userPaused()) {
-      hardResume();
-    }
-  });
-
-  // Crucial: when coming back via browser Back/Forward (bfcache)
-  window.addEventListener('pageshow', (evt) => {
-    // On many engines, evt.persisted === true means bfcache; still resume even if false
-    if (video.paused && video.muted && !userPaused()) {
-      hardResume();
-    }
-  });
-
-  // Extra safety for focus regain / SPA navs
-  window.addEventListener('focus', () => {
-    if (video.paused && video.muted && !userPaused()) {
-      hardResume();
-    }
-  });
-})();
-</script>
-<!--VIDEO BLEEDING END-->
 </body>
 </html>
