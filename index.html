@@ -60,6 +60,21 @@
     </div>
   </section>
 
+  <!-- NAVBAR V2 -->
+  <nav class="orb-nav-v2" aria-label="Portfolio navigation">
+    <button class="orb-nav-toggle" type="button" aria-expanded="false" aria-controls="orbNavPanel">
+      <canvas class="orb-nav-mini-canvas" aria-hidden="true"></canvas>
+      <span class="visually-hidden">Open navigation</span>
+    </button>
+    <div class="orb-nav-panel" id="orbNavPanel">
+      <a href="#start" data-starting-point>Starting Point</a>
+      <a href="#about" class="active">About Me</a>
+      <a href="#skillset">Skillset</a>
+      <a href="#experience">Work Experience</a>
+      <a href="#projects">Projects</a>
+    </div>
+  </nav>
+
   <!-- NAVBAR -->
   <div class="hero2">
     <div class="px-3 py-2 text-bg-dark">
@@ -203,12 +218,13 @@
         </div>
       </div> <!-- /px-3 -->
 
-    </div> <!-- /hero2 -->
+    </div> <!-- /navbar surface -->
+  </div> <!-- /hero2 -->
   <!-- NAVBAR END -->
 
   <!-- ABOUT EXPERIENCE -->
 <main class="about-suite">
-<section class="hp-stage about-hero position-relative overflow-hidden" aria-label="Portfolio introduction">
+<section class="hp-stage about-hero position-relative overflow-hidden" id="about" aria-label="Portfolio introduction">
   <canvas class="hp-3d-canvas" aria-hidden="true"></canvas>
   <div class="hp-grid-field" aria-hidden="true"></div>
   <div class="hp-scanline" aria-hidden="true"></div>
@@ -255,7 +271,7 @@
 
         <div class="d-flex gap-3 flex-wrap">
           <a href="./contact.html" class="btn btn-primary btn-lg hp-primary-btn">Get in Touch</a>
-          <a href="./projects.html" class="btn btn-outline-light btn-lg">View Projects</a>
+          <a href="#projects" class="btn btn-outline-light btn-lg">View Projects</a>
         </div>
       </div>
 
@@ -333,7 +349,7 @@
   <div class="home-features-shell">
     <div class="home-section-label poppins-regular">Selected Pathways</div>
     <div class="about-pathway-grid">
-      <a href="./skillset.html" class="about-pathway-card" data-depth-card>
+      <a href="#skillset" class="about-pathway-card" data-depth-card>
         <img src="./assets/portal_images/skillset-tech.jpg" alt="">
         <span class="about-pathway-number">01</span>
         <h3 class="poppins-regular">Skillset</h3>
@@ -341,7 +357,7 @@
         <strong class="poppins-regular">Explore Skills</strong>
       </a>
 
-      <a href="./work_exp.html" class="about-pathway-card" data-depth-card>
+      <a href="#experience" class="about-pathway-card" data-depth-card>
         <img src="./assets/portal_images/work-coding.jpg" alt="">
         <span class="about-pathway-number">02</span>
         <h3 class="poppins-regular">Work Experience</h3>
@@ -349,13 +365,125 @@
         <strong class="poppins-regular">View Experience</strong>
       </a>
 
-      <a href="./projects.html" class="about-pathway-card" data-depth-card>
+      <a href="#projects" class="about-pathway-card" data-depth-card>
         <img src="./assets/portal_images/projects-studio.jpg" alt="">
         <span class="about-pathway-number">03</span>
         <h3 class="poppins-regular">Projects</h3>
         <p class="poppins-light">My projects illustrate practical applications of innovative ideas and rigorous execution.</p>
         <strong class="poppins-regular">View Projects</strong>
       </a>
+    </div>
+  </div>
+</section>
+
+<section class="experience-section skillset-section" id="skillset" aria-label="Skillset">
+  <div class="experience-inner">
+    <div class="experience-heading">
+      <p class="home-section-label poppins-regular">Skillset</p>
+      <h2 class="poppins-light">A compact toolkit for clean, useful digital products.</h2>
+      <p class="poppins-light">
+        Clear communication, design thinking, analysis and web development form the base. The goal is not to collect tools,
+        but to use the right ones with taste and control.
+      </p>
+    </div>
+    <div class="skill-lux-grid" aria-label="Core skills">
+      <article>
+        <span>01</span>
+        <h3 class="poppins-regular">Communication</h3>
+        <p class="poppins-light">Structured exchange, calm wording and clear expectations across different audiences.</p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3 class="poppins-regular">Design</h3>
+        <p class="poppins-light">Visual systems that feel premium while staying understandable and user-friendly.</p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3 class="poppins-regular">Analysis</h3>
+        <p class="poppins-light">Data-driven thinking, pattern recognition and decisions grounded in evidence.</p>
+      </article>
+      <article>
+        <span>04</span>
+        <h3 class="poppins-regular">Web Development</h3>
+        <p class="poppins-light">Practical front-end execution with HTML, CSS, JavaScript, Bootstrap and modern tooling.</p>
+      </article>
+    </div>
+    <div class="skill-orbit-row" aria-label="Tools">
+      <img src="./assets/corporate_icons/html-icon.svg" alt="HTML">
+      <img src="./assets/corporate_icons/css-icon.svg" alt="CSS">
+      <img src="./assets/corporate_icons/js-icon.svg" alt="JavaScript">
+      <img src="./assets/corporate_icons/bootstrap-5-logo-icon.svg" alt="Bootstrap">
+      <img src="./assets/corporate_icons/github-icon.svg" alt="GitHub">
+      <img src="./assets/corporate_icons/visual-studio-code-icon.svg" alt="Visual Studio Code">
+      <img src="./assets/corporate_icons/openai-icon.svg" alt="OpenAI">
+      <img src="./assets/corporate_icons/mysql-icon.svg" alt="MySQL">
+      <img src="./assets/corporate_icons/postgresql-icon.svg" alt="PostgreSQL">
+    </div>
+  </div>
+</section>
+
+<section class="experience-section work-section" id="experience" aria-label="Work experience">
+  <div class="experience-inner">
+    <div class="experience-heading">
+      <p class="home-section-label poppins-regular">Work Experience</p>
+      <h2 class="poppins-light">From customer reality to quality control and digital execution.</h2>
+      <p class="poppins-light">
+        The professional path combines production quality, customer-facing discipline, creative work and AI-supported content systems.
+      </p>
+    </div>
+    <div class="timeline-lux">
+      <article data-depth-card>
+        <img src="./assets/card_images/TP-Quality_Assurance_Analyst.jpg" alt="Quality assurance analyst role">
+        <div>
+          <span>2022 - Now</span>
+          <h3 class="poppins-regular">Quality Assurance Analyst</h3>
+          <p class="poppins-light">Securing KPI-driven production quality in Athens with a focus on precision, consistency and measurable improvement.</p>
+        </div>
+      </article>
+      <article data-depth-card>
+        <img src="./assets/card_images/TP-Customer_Expert.jpg" alt="Customer expert role">
+        <div>
+          <span>2017 - 2022</span>
+          <h3 class="poppins-regular">Customer Expert</h3>
+          <p class="poppins-light">Solving customer cases with patience, structure and direct understanding of user needs.</p>
+        </div>
+      </article>
+      <article data-depth-card>
+        <img src="./assets/card_images/fiverr-graphic-designer.jpg" alt="Graphic design work">
+        <div>
+          <span>Creative Work</span>
+          <h3 class="poppins-regular">Junior Graphic Designer</h3>
+          <p class="poppins-light">Photo manipulation and custom visual execution with a practical eye for composition.</p>
+        </div>
+      </article>
+      <article data-depth-card>
+        <img src="./assets/card_images/AI_Avatar.jpg" alt="AI avatar creation">
+        <div>
+          <span>AI Content</span>
+          <h3 class="poppins-regular">AI Avatar Creation</h3>
+          <p class="poppins-light">Avatar-based training, onboarding and UGC concepts using modern AI production tools.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="experience-section projects-section" id="projects" aria-label="Projects">
+  <div class="experience-inner projects-inner">
+    <div class="experience-heading">
+      <p class="home-section-label poppins-regular">Projects</p>
+      <h2 class="poppins-light">Selected builds will live here as polished case studies.</h2>
+      <p class="poppins-light">
+        This area is now part of the same portfolio flow. It is prepared for future project cards, live previews and deeper case studies.
+      </p>
+    </div>
+    <div class="project-preview-panel" data-depth-card>
+      <img src="./assets/portal_images/projects-studio.jpg" alt="">
+      <div>
+        <span class="poppins-regular">Project Gallery</span>
+        <h3 class="poppins-light">Under construction, already framed for the final experience.</h3>
+        <p class="poppins-light">The structure is ready for practical work examples, visuals and measurable outcomes.</p>
+      </div>
     </div>
   </div>
 </section>

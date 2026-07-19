@@ -100,7 +100,7 @@
   const items = [
     {
       label: 'About Me',
-      href: './index.html',
+      href: '#about',
       description: 'Enter the personal portfolio overview.',
       color: 0xd6b56d,
       accent: 0x17120d,
@@ -108,7 +108,7 @@
     },
     {
       label: 'Skillset',
-      href: './skillset.html',
+      href: '#skillset',
       description: 'Explore the tools, systems and capabilities behind the work.',
       color: 0xcaa15a,
       accent: 0x5f431e,
@@ -116,7 +116,7 @@
     },
     {
       label: 'Work Experience',
-      href: './work_exp.html',
+      href: '#experience',
       description: 'Move through the professional timeline and selected roles.',
       color: 0xe2c982,
       accent: 0x2a2014,
@@ -124,7 +124,7 @@
     },
     {
       label: 'Projects',
-      href: './projects.html',
+      href: '#projects',
       description: 'View selected pieces, builds and applied concepts.',
       color: 0xb88736,
       accent: 0x11100e,
@@ -134,11 +134,27 @@
 
   let activeIndex = 0;
   let setOrbState = () => {};
+  let isRevealingAbout = false;
 
-  const revealAbout = () => {
-    document.body.classList.remove('has-portal');
-    document.body.classList.add('portal-entered');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const revealAbout = (target = '#about') => {
+    if (isRevealingAbout) return;
+    isRevealingAbout = true;
+    document.body.classList.add('portal-warp', 'portal-docking');
+
+    window.setTimeout(() => {
+      document.body.classList.remove('has-portal');
+      document.body.classList.add('portal-entered', 'about-warping');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }, 1120);
+
+    window.setTimeout(() => {
+      const targetElement = document.querySelector(target);
+      if (targetElement && target !== '#about') {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      document.body.classList.remove('portal-warp', 'portal-docking', 'about-warping');
+      isRevealingAbout = false;
+    }, 2140);
   };
 
   const renderItem = () => {
@@ -163,16 +179,8 @@
   });
 
   link.addEventListener('click', (event) => {
-    if (items[activeIndex].label !== 'About Me') return;
     event.preventDefault();
-    revealAbout();
-  });
-
-  [link, prev, next].forEach((element) => {
-    element.addEventListener('pointerenter', () => setOrbState(items[activeIndex], true));
-    element.addEventListener('pointerleave', () => setOrbState(items[activeIndex], false));
-    element.addEventListener('focus', () => setOrbState(items[activeIndex], true));
-    element.addEventListener('blur', () => setOrbState(items[activeIndex], false));
+    revealAbout(items[activeIndex].href);
   });
 
   try {
@@ -183,11 +191,11 @@
       antialias: true,
       powerPreference: 'high-performance'
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.5));
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 0, 6.8);
+    camera.position.set(0, 0, 7.35);
 
     const group = new THREE.Group();
     scene.add(group);
@@ -216,8 +224,8 @@
     const earthPolygons = await loadEarthPolygons();
 
     const makeEarthTexture = (landPolygons = fallbackEarthPolygons) => {
-      const width = 2048;
-      const height = 1024;
+      const width = 3072;
+      const height = 1536;
       const mapCanvas = document.createElement('canvas');
       mapCanvas.width = width;
       mapCanvas.height = height;
@@ -279,14 +287,17 @@
       const texture = new THREE.CanvasTexture(mapCanvas);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.wrapS = THREE.RepeatWrapping;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
       return texture;
     };
 
-    const sphereGeometry = new THREE.SphereGeometry(1.72, 52, 28);
+    const sphereGeometry = new THREE.SphereGeometry(1.72, 96, 56);
     const earthMaterial = new THREE.MeshBasicMaterial({
       map: makeEarthTexture(earthPolygons || fallbackEarthPolygons),
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.96,
       depthWrite: false,
       blending: THREE.NormalBlending
     });
@@ -330,6 +341,87 @@
       for (let lat = -78; lat <= 78; lat += 6) coords.push([lat, lon]);
       addGeoLine(coords);
     }
+
+    const connectionMaterial = new THREE.MeshBasicMaterial({
+      color: 0x315c58,
+      transparent: true,
+      opacity: 0.74,
+      depthWrite: false
+    });
+    const connectionGroup = new THREE.Group();
+    const connectionArcs = [];
+    group.add(connectionGroup);
+
+    const makeArc = (from, to, phase = 0) => {
+      const start = latLonToVector(from[0], from[1], 1.82);
+      const end = latLonToVector(to[0], to[1], 1.82);
+      const points = [];
+      const steps = 168;
+      for (let i = 0; i <= steps; i += 1) {
+        const progress = i / steps;
+        const point = start.clone().lerp(end, progress).normalize();
+        const lift = Math.sin(progress * Math.PI) * 0.42;
+        point.multiplyScalar(1.88 + lift);
+        points.push(point);
+      }
+      const arc = new THREE.Group();
+      arc.userData = { phase, segments: [] };
+      for (let i = 0; i < points.length - 1; i += 1) {
+        const curve = new THREE.LineCurve3(points[i], points[i + 1]);
+        const geometry = new THREE.TubeGeometry(curve, 2, 0.01, 8, false);
+        const segment = new THREE.Mesh(geometry, connectionMaterial);
+        segment.visible = false;
+        arc.add(segment);
+        arc.userData.segments.push(segment);
+      }
+      connectionGroup.add(arc);
+      connectionArcs.push(arc);
+    };
+
+    const greeceHub = [37.98, 23.72];
+    [
+      { to: [21.31, -157.86], phase: 0 },
+      { to: [40.71, -74.01], phase: .13 },
+      { to: [-33.87, 151.21], phase: .26 },
+      { to: [52.52, 13.4], phase: .39 },
+      { to: [25.2, 55.27], phase: .52 },
+      { to: [22.32, 114.17], phase: .65 },
+      { to: [35.68, 139.69], phase: .78 }
+    ].forEach(({ to, phase }) => makeArc(greeceHub, to, phase));
+
+    const nodePositions = [
+      greeceHub,
+      [21.31, -157.86],
+      [40.71, -74.01],
+      [-33.87, 151.21],
+      [52.52, 13.4],
+      [25.2, 55.27],
+      [22.32, 114.17],
+      [35.68, 139.69]
+    ];
+    const nodeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x315c58,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false
+    });
+    const nodeGlowMaterial = new THREE.MeshBasicMaterial({
+      color: 0xfff1bc,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false
+    });
+    const connectionNodes = [];
+    nodePositions.forEach(([lat, lon], index) => {
+      const node = new THREE.Group();
+      const isHub = index === 0;
+      const core = new THREE.Mesh(new THREE.SphereGeometry(isHub ? 0.056 : 0.038, 16, 12), nodeMaterial);
+      const glow = new THREE.Mesh(new THREE.SphereGeometry(isHub ? 0.105 : 0.072, 16, 12), nodeGlowMaterial);
+      node.add(glow, core);
+      node.position.copy(latLonToVector(lat, lon, 1.94));
+      connectionGroup.add(node);
+      connectionNodes.push(node);
+    });
 
     const ringMaterial = new THREE.MeshBasicMaterial({
       color: items[0].color,
@@ -377,8 +469,8 @@
       depthWrite: false,
       depthTest: false
     });
-    const photoDisc = new THREE.Mesh(new THREE.CircleGeometry(0.98, 128), photoMaterial);
-    photoDisc.position.z = 2.05;
+    const photoDisc = new THREE.Mesh(new THREE.CircleGeometry(1.32, 192), photoMaterial);
+    photoDisc.position.set(0, 0, 0.18);
     photoDisc.renderOrder = 10;
     scene.add(photoDisc);
 
@@ -391,7 +483,7 @@
         }
         textureLoader.load(src, (imageTexture) => {
           const textureImage = imageTexture.image;
-          const size = 768;
+          const size = 1280;
           const textureCanvas = document.createElement('canvas');
           textureCanvas.width = size;
           textureCanvas.height = size;
@@ -420,48 +512,150 @@
           ctx.stroke();
           const texture = new THREE.CanvasTexture(textureCanvas);
           texture.colorSpace = THREE.SRGBColorSpace;
+          texture.minFilter = THREE.LinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          texture.generateMipmaps = false;
           photoCache.set(src, texture);
           resolve(texture);
         }, undefined, () => resolve(null));
       });
 
     let targetPhotoOpacity = 0;
-    let targetPhotoScale = 0.9;
+    let targetPhotoScale = 1;
+    let targetGroupScale = 0.82;
+    let targetGroupX = -1.5;
+    let targetPhotoX = 1.5;
+    let portalTextureRequest = 0;
+    const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
-    setOrbState = async (item, hover = false) => {
+    const getPairLayout = () => {
+      const width = canvas.getBoundingClientRect().width;
+      if (width < 430) {
+        return { groupScale: 1, photoScale: 1, x: 0, photoRadius: 0.98 };
+      }
+      return { groupScale: 0.86, photoScale: 0.98, x: 2.05, photoRadius: 1.46 };
+    };
+
+    setOrbState = async (item) => {
+      const requestId = ++portalTextureRequest;
+      const layout = getPairLayout();
+      targetPhotoOpacity = 0;
+      targetPhotoScale = Math.max(layout.photoScale - 0.08, 0.82);
       ringMaterial.color.setHex(item.color);
       pointsMaterial.color.setHex(item.color);
       earthLineMaterial.color.setHex(item.color);
-      earthMaterial.opacity = hover ? 0.48 : 0.92;
-      ringMaterial.opacity = hover ? 0.58 : 0.36;
-      earthLineMaterial.opacity = hover ? 0.28 : 0.2;
-      pointsMaterial.opacity = hover ? 0.2 : 0.12;
-      pointsMaterial.size = hover ? 0.024 : 0.018;
-      const texture = await makePortalTexture(item.image);
+      earthMaterial.opacity = 0.94;
+      ringMaterial.opacity = 0.5;
+      earthLineMaterial.opacity = 0.3;
+      pointsMaterial.opacity = 0.16;
+      pointsMaterial.size = 0.022;
+      const [texture] = await Promise.all([
+        makePortalTexture(item.image),
+        wait(260)
+      ]);
+      if (requestId !== portalTextureRequest) return;
       if (texture) photoMaterial.map = texture;
-      targetPhotoOpacity = hover ? 0.82 : 0;
-      targetPhotoScale = hover ? 1 : 0.9;
+      targetPhotoOpacity = texture ? 0.86 : 0;
+      targetPhotoScale = layout.photoScale;
+      targetGroupScale = layout.groupScale;
+      targetGroupX = -layout.x;
+      targetPhotoX = layout.x;
+      photoDisc.geometry.dispose();
+      photoDisc.geometry = new THREE.CircleGeometry(layout.photoRadius, 128);
       photoMaterial.needsUpdate = true;
     };
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const size = Math.max(1, Math.min(rect.width, rect.height));
-      renderer.setSize(size, size, true);
+      const width = Math.max(1, rect.width);
+      const height = Math.max(1, rect.height);
+      renderer.setSize(width, height, true);
       canvas.style.width = '100%';
       canvas.style.height = '100%';
-      camera.aspect = 1;
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
+      const layout = getPairLayout();
+      targetPhotoScale = layout.photoScale;
+      targetGroupScale = layout.groupScale;
+      targetGroupX = -layout.x;
+      targetPhotoX = layout.x;
+      photoDisc.geometry.dispose();
+      photoDisc.geometry = new THREE.CircleGeometry(layout.photoRadius, 128);
     };
     resize();
     window.addEventListener('resize', resize);
 
+    let globeRotationY = -0.42;
+    let globeRotationX = 0;
+    let lastFrameTime = 0;
+    let isDraggingGlobe = false;
+    let lastDragX = 0;
+    let lastDragY = 0;
+
+    const isDesktopPortal = () => canvas.getBoundingClientRect().width >= 430;
+
+    canvas.addEventListener('pointerdown', (event) => {
+      if (!isDesktopPortal()) return;
+      isDraggingGlobe = true;
+      lastDragX = event.clientX;
+      lastDragY = event.clientY;
+      canvas.classList.add('is-dragging');
+      canvas.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (!isDraggingGlobe) return;
+      const deltaX = event.clientX - lastDragX;
+      const deltaY = event.clientY - lastDragY;
+      lastDragX = event.clientX;
+      lastDragY = event.clientY;
+      globeRotationY += deltaX * 0.006;
+      globeRotationX = Math.max(-0.55, Math.min(0.55, globeRotationX + deltaY * 0.003));
+    });
+
+    const stopGlobeDrag = (event) => {
+      if (!isDraggingGlobe) return;
+      isDraggingGlobe = false;
+      canvas.classList.remove('is-dragging');
+      canvas.releasePointerCapture?.(event.pointerId);
+    };
+
+    canvas.addEventListener('pointerup', stopGlobeDrag);
+    canvas.addEventListener('pointercancel', stopGlobeDrag);
+    canvas.addEventListener('lostpointercapture', () => {
+      isDraggingGlobe = false;
+      canvas.classList.remove('is-dragging');
+    });
+
     const animate = (time) => {
       const t = time * 0.001;
-      group.rotation.y = -0.42 + t * 0.1;
+      const delta = lastFrameTime ? Math.min(0.05, t - lastFrameTime) : 0;
+      lastFrameTime = t;
+      group.position.x += (targetGroupX - group.position.x) * 0.08;
+      const nextGroupScale = group.scale.x + (targetGroupScale - group.scale.x) * 0.08;
+      group.scale.setScalar(nextGroupScale);
+      if (!isDraggingGlobe) globeRotationY += delta * 0.16;
+      group.rotation.y = globeRotationY;
+      group.rotation.x += (globeRotationX - group.rotation.x) * 0.1;
       globe.rotation.x = Math.sin(t * 0.5) * 0.08;
       rings.rotation.z = t * 0.05;
+      connectionArcs.forEach((arc) => {
+        const cycle = (t * 0.26 + arc.userData.phase) % 1;
+        const progress = cycle < 0.78 ? cycle / 0.78 : 1;
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const visibleCount = Math.floor(arc.userData.segments.length * eased);
+        arc.userData.segments.forEach((segment, index) => {
+          segment.visible = index <= visibleCount;
+        });
+      });
+      const nodePulse = 1 + Math.sin(t * 2.6) * 0.12;
+      connectionNodes.forEach((node) => {
+        node.scale.setScalar(nodePulse);
+      });
+      nodeMaterial.opacity = 0.82 + Math.sin(t * 2.4) * 0.12;
       photoMaterial.opacity += (targetPhotoOpacity - photoMaterial.opacity) * 0.08;
+      photoDisc.position.x += (targetPhotoX - photoDisc.position.x) * 0.08;
       const currentScale = photoDisc.scale.x + (targetPhotoScale - photoDisc.scale.x) * 0.08;
       photoDisc.scale.setScalar(currentScale);
       renderer.render(scene, camera);
@@ -474,6 +668,231 @@
     renderItem();
   }
 })();
+
+/* =========================
+   Floating globe navigation
+   ========================= */
+(function () {
+  const nav = document.querySelector('.orb-nav-v2');
+  const toggle = document.querySelector('.orb-nav-toggle');
+  const panel = document.getElementById('orbNavPanel');
+  if (!nav || !toggle || !panel) return;
+
+  const closeNav = () => {
+    nav.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!nav.contains(event.target)) closeNav();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeNav();
+  });
+
+  const returnToStartingPoint = () => {
+    closeNav();
+    document.body.classList.add('section-warping');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.setTimeout(() => {
+      document.body.classList.remove('portal-entered', 'section-warping');
+      document.body.classList.add('has-portal', 'portal-ready');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }, 520);
+  };
+
+  const startLink = panel.querySelector('[data-starting-point]');
+  startLink?.addEventListener('click', (event) => {
+    event.preventDefault();
+    returnToStartingPoint();
+  });
+
+  panel.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (event) => {
+      if (anchor.matches('[data-starting-point]')) return;
+      const target = document.querySelector(anchor.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      closeNav();
+      panel.querySelectorAll('a').forEach((link) => link.classList.remove('active'));
+      anchor.classList.add('active');
+      document.body.classList.add('section-warping');
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.setTimeout(() => {
+        document.body.classList.remove('section-warping');
+      }, 760);
+    });
+  });
+
+  const sectionLinks = [...panel.querySelectorAll('a[href^="#"]:not([data-starting-point])')];
+  const updateActiveLink = (id) => {
+    sectionLinks.forEach((link) => {
+      link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+    });
+  };
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible?.target?.id) updateActiveLink(visible.target.id);
+    }, { threshold: [0.28, 0.46, 0.64] });
+
+    ['about', 'skillset', 'experience', 'projects'].forEach((id) => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+  }
+
+  const miniCanvas = document.querySelector('.orb-nav-mini-canvas');
+  if (!miniCanvas) return;
+
+  const fallbackPolygons = [
+    [[71,-168],[70,-145],[60,-132],[54,-124],[49,-123],[43,-117],[34,-119],[26,-112],[22,-101],[15,-96],[8,-82],[12,-72],[22,-77],[29,-82],[31,-91],[38,-100],[49,-94],[55,-80],[50,-67],[45,-61],[31,-81],[25,-97],[19,-104],[26,-113],[37,-122],[50,-132],[58,-152]],
+    [[13,-81],[8,-76],[5,-78],[2,-75],[-5,-79],[-13,-76],[-22,-71],[-34,-70],[-50,-73],[-56,-68],[-54,-58],[-45,-53],[-32,-51],[-22,-44],[-10,-39],[-3,-45],[-12,-55],[-8,-67],[1,-72],[8,-78]],
+    [[37,-10],[44,1],[50,18],[55,37],[54,56],[47,71],[40,78],[31,74],[27,58],[22,45],[15,39],[5,43],[-4,38],[-11,32],[-19,19],[-29,17],[-35,22],[-35,10],[-28,1],[-12,-8],[6,-5],[20,-7],[31,-9]],
+    [[36,-7],[32,4],[31,16],[26,25],[19,33],[10,42],[0,49],[-11,45],[-23,36],[-34,26],[-35,16],[-29,7],[-14,4],[-4,0],[10,-4],[23,-8]],
+    [[56,43],[61,57],[61,77],[55,92],[49,113],[43,128],[35,139],[25,121],[17,106],[19,88],[27,73],[39,58]],
+    [[31,66],[21,78],[12,86],[5,96],[-3,104],[-8,116],[-18,123],[-26,134],[-38,145],[-43,157],[-35,168],[-23,155],[-15,141],[-8,128],[5,119],[16,105],[25,91]],
+    [[-63,-74],[-68,-42],[-73,0],[-70,58],[-65,112],[-70,160],[-79,180],[-81,-162],[-75,-112]]
+  ];
+
+  const drawMiniGlobe = async () => {
+    const context = miniCanvas.getContext('2d');
+    if (!context) return;
+    let polygons = fallbackPolygons;
+
+    try {
+      const response = await fetch('./assets/vendor/natural-earth/ne_110m_land.polygons.json');
+      const data = await response.json();
+      if (Array.isArray(data.polygons)) polygons = data.polygons;
+    } catch (_) {}
+
+    const resize = () => {
+      const rect = miniCanvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2.5);
+      miniCanvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      miniCanvas.height = Math.max(1, Math.floor(rect.height * ratio));
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const project = (lat, lon, centerLon, radius, cx, cy) => {
+      const phi = lat * Math.PI / 180;
+      const lambda = (lon - centerLon) * Math.PI / 180;
+      const x = Math.cos(phi) * Math.sin(lambda);
+      const y = Math.sin(phi);
+      const z = Math.cos(phi) * Math.cos(lambda);
+      if (z <= -0.04) return null;
+      return [cx + x * radius, cy - y * radius, z];
+    };
+
+    const drawLineSet = (coords, centerLon, radius, cx, cy, closePath = false) => {
+      let active = false;
+      let visibleCount = 0;
+      context.beginPath();
+      coords.forEach(([lat, lon]) => {
+        const point = project(lat, lon, centerLon, radius, cx, cy);
+        if (!point) {
+          active = false;
+          return;
+        }
+        if (!active) {
+          context.moveTo(point[0], point[1]);
+          active = true;
+        } else {
+          context.lineTo(point[0], point[1]);
+        }
+        visibleCount += 1;
+      });
+      if (closePath && visibleCount > 4) context.closePath();
+      if (visibleCount > 1) {
+        if (closePath) context.fill();
+        context.stroke();
+      }
+    };
+
+    const draw = (time) => {
+      const rect = miniCanvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const size = Math.min(width, height);
+      const cx = width / 2;
+      const cy = height / 2;
+      const radius = size * 0.43;
+      const centerLon = (time * 0.018) % 360;
+
+      context.clearRect(0, 0, width, height);
+      context.save();
+      context.beginPath();
+      context.arc(cx, cy, radius, 0, Math.PI * 2);
+      context.clip();
+
+      const sea = context.createRadialGradient(cx - radius * .35, cy - radius * .42, 1, cx, cy, radius * 1.18);
+      sea.addColorStop(0, 'rgba(255, 248, 232, .92)');
+      sea.addColorStop(.42, 'rgba(214, 181, 109, .30)');
+      sea.addColorStop(1, 'rgba(14, 12, 10, .96)');
+      context.fillStyle = sea;
+      context.fillRect(0, 0, width, height);
+
+      context.strokeStyle = 'rgba(255, 241, 188, .32)';
+      context.lineWidth = 0.65;
+      for (let lat = -60; lat <= 60; lat += 30) {
+        const coords = [];
+        for (let lon = -180; lon <= 180; lon += 5) coords.push([lat, lon]);
+        drawLineSet(coords, centerLon, radius, cx, cy);
+      }
+      for (let lon = -150; lon <= 180; lon += 30) {
+        const coords = [];
+        for (let lat = -82; lat <= 82; lat += 5) coords.push([lat, lon]);
+        drawLineSet(coords, centerLon, radius, cx, cy);
+      }
+
+      context.fillStyle = 'rgba(214, 181, 109, .82)';
+      context.strokeStyle = 'rgba(255, 248, 232, .76)';
+      context.lineWidth = 0.8;
+      polygons.forEach((coords) => drawLineSet(coords, centerLon, radius, cx, cy, true));
+
+      context.restore();
+      context.beginPath();
+      context.arc(cx, cy, radius, 0, Math.PI * 2);
+      context.strokeStyle = 'rgba(255, 241, 188, .88)';
+      context.lineWidth = 1.1;
+      context.stroke();
+      context.beginPath();
+      context.ellipse(cx, cy, radius * .96, radius * .36, 0, 0, Math.PI * 2);
+      context.strokeStyle = 'rgba(49, 92, 88, .48)';
+      context.lineWidth = .9;
+      context.stroke();
+
+      requestAnimationFrame(draw);
+    };
+    draw(0);
+  };
+
+  drawMiniGlobe();
+})();
+
+document.addEventListener('click', (event) => {
+  const anchor = event.target.closest('a[href^="#"]');
+  if (!anchor || anchor.closest('.portal-menu') || anchor.closest('.orb-nav-panel')) return;
+  const target = document.querySelector(anchor.getAttribute('href'));
+  if (!target || document.body.classList.contains('has-portal')) return;
+  event.preventDefault();
+  document.body.classList.add('section-warping');
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.setTimeout(() => {
+    document.body.classList.remove('section-warping');
+  }, 760);
+});
 
 /* =========================
    Auto-close mobile menu
