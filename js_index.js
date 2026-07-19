@@ -530,18 +530,28 @@
     const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
     const getPairLayout = () => {
-      const width = canvas.getBoundingClientRect().width;
-      if (width < 430) {
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      if (width < 430 || height > width * 0.86) {
         return { groupScale: 1, photoScale: 1, x: 0, photoRadius: 0.98 };
       }
-      return { groupScale: 0.86, photoScale: 0.98, x: 2.05, photoRadius: 1.46 };
+
+      const heightRatio = Math.max(0.76, Math.min(1, height / 560));
+      const spacingRatio = Math.max(0.94, heightRatio);
+      return {
+        groupScale: 0.86 * heightRatio,
+        photoScale: 0.98 * heightRatio,
+        x: 2.05 * spacingRatio,
+        photoRadius: 1.46
+      };
     };
 
     setOrbState = async (item) => {
       const requestId = ++portalTextureRequest;
-      const layout = getPairLayout();
+      const initialLayout = getPairLayout();
       targetPhotoOpacity = 0;
-      targetPhotoScale = Math.max(layout.photoScale - 0.08, 0.82);
+      targetPhotoScale = Math.max(initialLayout.photoScale - 0.08, 0.82);
       ringMaterial.color.setHex(item.color);
       pointsMaterial.color.setHex(item.color);
       earthLineMaterial.color.setHex(item.color);
@@ -556,6 +566,7 @@
       ]);
       if (requestId !== portalTextureRequest) return;
       if (texture) photoMaterial.map = texture;
+      const layout = getPairLayout();
       targetPhotoOpacity = texture ? 0.86 : 0;
       targetPhotoScale = layout.photoScale;
       targetGroupScale = layout.groupScale;
