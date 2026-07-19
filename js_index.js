@@ -135,6 +135,7 @@
   let activeIndex = 0;
   let setOrbState = () => {};
   let isRevealingAbout = false;
+  let refreshPortalScene = () => {};
 
   const revealAbout = (target = '#about') => {
     if (isRevealingAbout) return;
@@ -565,11 +566,23 @@
       photoMaterial.needsUpdate = true;
     };
 
-    const resize = () => {
+    let resizeFrame = 0;
+    let lastCanvasWidth = 0;
+    let lastCanvasHeight = 0;
+
+    const resize = (options = {}) => {
       const rect = canvas.getBoundingClientRect();
-      const width = Math.max(1, rect.width);
-      const height = Math.max(1, rect.height);
-      renderer.setSize(width, height, true);
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
+      if (width < 2 || height < 2) return false;
+
+      const force = Boolean(options.force);
+      const instant = Boolean(options.instant);
+      if (!force && width === lastCanvasWidth && height === lastCanvasHeight) return true;
+
+      lastCanvasWidth = width;
+      lastCanvasHeight = height;
+      renderer.setSize(width, height, false);
       canvas.style.width = '100%';
       canvas.style.height = '100%';
       camera.aspect = width / height;
@@ -581,9 +594,57 @@
       targetPhotoX = layout.x;
       photoDisc.geometry.dispose();
       photoDisc.geometry = new THREE.CircleGeometry(layout.photoRadius, 128);
+      if (instant) {
+        group.position.x = targetGroupX;
+        group.scale.setScalar(targetGroupScale);
+        photoDisc.position.x = targetPhotoX;
+        photoDisc.scale.setScalar(targetPhotoScale);
+      }
+      renderer.render(scene, camera);
+      return true;
+    };
+
+    const scheduleResize = (options = {}) => {
+      window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => {
+        const resized = resize(options);
+        if (!resized) {
+          window.setTimeout(() => scheduleResize(options), 80);
+        }
+      });
     };
     resize();
     window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', () => {
+      scheduleResize({ force: true, instant: true });
+      window.setTimeout(() => scheduleResize({ force: true, instant: true }), 260);
+    });
+
+    if ('ResizeObserver' in window) {
+      const portalResizeObserver = new ResizeObserver(() => {
+        scheduleResize({ force: true });
+      });
+      portalResizeObserver.observe(portal);
+      portalResizeObserver.observe(canvas);
+    }
+
+    refreshPortalScene = () => {
+      isRevealingAbout = false;
+      if (isDraggingGlobe) {
+        isDraggingGlobe = false;
+        canvas.classList.remove('is-dragging');
+      }
+      photoMaterial.opacity = 0;
+      targetPhotoOpacity = 0;
+      renderItem();
+      scheduleResize({ force: true, instant: true });
+      window.setTimeout(() => scheduleResize({ force: true, instant: true }), 120);
+      window.setTimeout(() => scheduleResize({ force: true }), 520);
+      window.setTimeout(() => scheduleResize({ force: true }), 1200);
+    };
+
+    window.addEventListener('portfolio:portal-reset', refreshPortalScene);
+    window.addEventListener('pageshow', () => scheduleResize({ force: true, instant: true }));
 
     let globeRotationY = -0.42;
     let globeRotationX = 0;
@@ -632,6 +693,7 @@
       const t = time * 0.001;
       const delta = lastFrameTime ? Math.min(0.05, t - lastFrameTime) : 0;
       lastFrameTime = t;
+      resize();
       group.position.x += (targetGroupX - group.position.x) * 0.08;
       const nextGroupScale = group.scale.x + (targetGroupScale - group.scale.x) * 0.08;
       group.scale.setScalar(nextGroupScale);
@@ -698,12 +760,18 @@
 
   const returnToStartingPoint = () => {
     closeNav();
+    document.body.classList.remove('portal-ready', 'portal-warp', 'portal-docking', 'about-warping');
     document.body.classList.add('section-warping');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     window.setTimeout(() => {
       document.body.classList.remove('portal-entered', 'section-warping');
-      document.body.classList.add('has-portal', 'portal-ready');
+      document.body.classList.add('has-portal');
       window.scrollTo({ top: 0, behavior: 'auto' });
+      window.dispatchEvent(new CustomEvent('portfolio:portal-reset'));
+      window.requestAnimationFrame(() => {
+        document.body.classList.add('portal-ready');
+        window.dispatchEvent(new CustomEvent('portfolio:portal-reset'));
+      });
     }, 520);
   };
 
