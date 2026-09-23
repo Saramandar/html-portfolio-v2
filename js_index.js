@@ -1300,6 +1300,418 @@ window.addEventListener('pageshow', (e) => {
 })();
 
 /* =========================
+   Work experience orbit
+   ========================= */
+(function () {
+  const stage = document.querySelector('[data-experience-orbit]');
+  const cards = [...document.querySelectorAll('.experience-orbit-card')];
+  const detail = document.getElementById('experienceDetail');
+  if (!stage || !cards.length || !detail) return;
+
+  const detailPeriod = detail.querySelector('[data-experience-period]');
+  const detailTitle = detail.querySelector('[data-experience-title]');
+  const detailCopy = detail.querySelector('[data-experience-copy]');
+  const detailIndex = detail.querySelector('[data-experience-index]');
+  const detailClose = detail.querySelector('.experience-detail-close');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hoverPointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  let rotation = -0.72;
+  let activeCard = null;
+  let inView = false;
+  let lastTime = 0;
+  let orbitFrame = 0;
+  let stageWidth = 0;
+  let stageHeight = 0;
+  let detailSwapTimer = 0;
+  let detailSwapToken = 0;
+
+  const updateStageSize = () => {
+    const rect = stage.getBoundingClientRect();
+    stageWidth = rect.width;
+    stageHeight = rect.height;
+  };
+
+  const getOrbitRadius = () => {
+    if (stageWidth < 576) {
+      return {
+        x: Math.min(stageWidth * 0.275, 112),
+        y: Math.min(stageHeight * 0.27, 184)
+      };
+    }
+    if (stageWidth < 992) {
+      return {
+        x: Math.min(stageWidth * 0.34, 300),
+        y: Math.min(stageHeight * 0.25, 185)
+      };
+    }
+    return {
+      x: Math.min(stageWidth * 0.34, 485),
+      y: Math.min(stageHeight * 0.245, 198)
+    };
+  };
+
+  const positionCards = () => {
+    if (!stageWidth || !stageHeight) updateStageSize();
+    const radius = getOrbitRadius();
+
+    cards.forEach((card, index) => {
+      const angle = rotation + (index / cards.length) * Math.PI * 2;
+      const depth = (Math.sin(angle) + 1) / 2;
+      const x = Math.cos(angle) * radius.x;
+      const y = Math.sin(angle) * radius.y;
+      const scale = 0.73 + depth * 0.3;
+      const isActive = card === activeCard;
+
+      card.dataset.orbitX = String(x);
+      card.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+      card.style.opacity = String(isActive ? 1 : 0.38 + depth * 0.62);
+      card.style.zIndex = String(isActive ? 48 : 5 + Math.round(depth * 34));
+      card.style.filter = `blur(${isActive ? 0 : (1 - depth) * 1.25}px)`;
+    });
+  };
+
+  const closeDetail = () => {
+    if (!activeCard) return;
+    detailSwapToken += 1;
+    window.clearTimeout(detailSwapTimer);
+    activeCard.classList.remove('is-active');
+    activeCard.querySelector('.experience-orbit-trigger')?.setAttribute('aria-expanded', 'false');
+    activeCard = null;
+    stage.classList.remove('is-detail-open', 'is-detail-switching', 'detail-left');
+    detail.setAttribute('aria-hidden', 'true');
+  };
+
+  const renderDetailContent = (card) => {
+    detailPeriod.textContent = card.dataset.period || '';
+    detailTitle.textContent = card.dataset.title || '';
+    detailCopy.textContent = card.dataset.copy || '';
+    detailIndex.textContent = String(cards.indexOf(card) + 1).padStart(2, '0');
+    stage.classList.toggle('detail-left', Number(card.dataset.orbitX || 0) > 0);
+  };
+
+  const openDetail = (card) => {
+    if (!card || card === activeCard) return;
+    const isSwitchingCard = Boolean(activeCard && stage.classList.contains('is-detail-open'));
+    const swapToken = ++detailSwapToken;
+    window.clearTimeout(detailSwapTimer);
+
+    cards.forEach((item) => {
+      const selected = item === card;
+      item.classList.toggle('is-active', selected);
+      item.querySelector('.experience-orbit-trigger')?.setAttribute('aria-expanded', String(selected));
+    });
+
+    activeCard = card;
+    stage.classList.add('is-detail-open');
+    detail.setAttribute('aria-hidden', 'false');
+    positionCards();
+
+    if (!isSwitchingCard) {
+      renderDetailContent(card);
+      return;
+    }
+
+    stage.classList.add('is-detail-switching');
+    detailSwapTimer = window.setTimeout(() => {
+      if (swapToken !== detailSwapToken || activeCard !== card) return;
+      renderDetailContent(card);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (swapToken === detailSwapToken && activeCard === card) {
+            stage.classList.remove('is-detail-switching');
+          }
+        });
+      });
+    }, 170);
+  };
+
+  cards.forEach((card) => {
+    const trigger = card.querySelector('.experience-orbit-trigger');
+    if (!trigger) return;
+
+    trigger.addEventListener('pointermove', (event) => {
+      if (hoverPointer.matches && event.pointerType === 'mouse' && activeCard !== card) {
+        openDetail(card);
+      }
+    });
+    trigger.addEventListener('focus', () => openDetail(card));
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      openDetail(card);
+    });
+  });
+
+  detailClose?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    closeDetail();
+  });
+
+  document.addEventListener('pointerdown', (event) => {
+    if (!activeCard) return;
+    if (detail.contains(event.target) || event.target.closest('.experience-orbit-card')) return;
+    closeDetail();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeDetail();
+  });
+
+  updateStageSize();
+  positionCards();
+
+  if ('ResizeObserver' in window) {
+    const observer = new ResizeObserver(() => {
+      updateStageSize();
+      positionCards();
+    });
+    observer.observe(stage);
+  } else {
+    window.addEventListener('resize', () => {
+      updateStageSize();
+      positionCards();
+    });
+  }
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = Boolean(entry?.isIntersecting);
+    }, { rootMargin: '18% 0px', threshold: 0.05 });
+    observer.observe(stage);
+  } else {
+    inView = true;
+  }
+
+  const animateOrbit = (time) => {
+    const delta = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 0;
+    lastTime = time;
+    if (inView && !activeCard && !reducedMotion) {
+      rotation += delta * 0.055;
+      positionCards();
+    }
+    orbitFrame = window.requestAnimationFrame(animateOrbit);
+  };
+  orbitFrame = window.requestAnimationFrame(animateOrbit);
+  window.addEventListener('pagehide', () => window.cancelAnimationFrame(orbitFrame), { once: true });
+
+  const initExperienceGlobe = async () => {
+    const canvas = stage.querySelector('.experience-globe-canvas');
+    const shell = stage.querySelector('.experience-globe-shell');
+    if (!canvas || !shell) return;
+
+    try {
+      const THREE = await import('./assets/vendor/three/three.module.js');
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance'
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
+      camera.position.set(0, 0, 4.35);
+
+      const globeGroup = new THREE.Group();
+      globeGroup.rotation.y = -0.5;
+      globeGroup.rotation.x = -0.06;
+      scene.add(globeGroup);
+
+      const fallbackPolygons = [
+        [[71,-168],[70,-145],[60,-132],[54,-124],[49,-123],[43,-117],[34,-119],[26,-112],[22,-101],[15,-96],[8,-82],[12,-72],[22,-77],[29,-82],[31,-91],[38,-100],[49,-94],[55,-80],[50,-67],[45,-61]],
+        [[13,-81],[8,-76],[5,-78],[2,-75],[-5,-79],[-13,-76],[-22,-71],[-34,-70],[-50,-73],[-56,-68],[-54,-58],[-45,-53],[-32,-51],[-22,-44],[-10,-39],[-3,-45]],
+        [[37,-10],[44,1],[50,18],[55,37],[54,56],[47,71],[40,78],[31,74],[27,58],[22,45],[15,39],[5,43],[-4,38],[-11,32],[-19,19],[-29,17],[-35,22],[-35,10]],
+        [[36,-7],[32,4],[31,16],[26,25],[19,33],[10,42],[0,49],[-11,45],[-23,36],[-34,26],[-35,16],[-29,7],[-14,4]],
+        [[56,43],[61,57],[61,77],[55,92],[49,113],[43,128],[35,139],[25,121],[17,106],[19,88],[27,73],[39,58]],
+        [[31,66],[21,78],[12,86],[5,96],[-3,104],[-8,116],[-18,123],[-26,134],[-38,145],[-43,157],[-35,168],[-23,155],[-15,141]]
+      ];
+
+      let polygons = fallbackPolygons;
+      try {
+        const response = await fetch('./assets/vendor/natural-earth/ne_110m_land.polygons.json');
+        const data = response.ok ? await response.json() : null;
+        if (Array.isArray(data?.polygons)) polygons = data.polygons;
+      } catch (_) {}
+
+      const mapCanvas = document.createElement('canvas');
+      mapCanvas.width = 1536;
+      mapCanvas.height = 768;
+      const mapContext = mapCanvas.getContext('2d');
+      const project = (lat, lon) => [
+        ((lon + 180) / 360) * mapCanvas.width,
+        ((90 - lat) / 180) * mapCanvas.height
+      ];
+
+      mapContext.strokeStyle = 'rgba(255, 241, 188, .16)';
+      mapContext.lineWidth = 1;
+      for (let lat = -60; lat <= 60; lat += 20) {
+        mapContext.beginPath();
+        for (let lon = -180; lon <= 180; lon += 5) {
+          const [x, y] = project(lat, lon);
+          if (lon === -180) mapContext.moveTo(x, y);
+          else mapContext.lineTo(x, y);
+        }
+        mapContext.stroke();
+      }
+      for (let lon = -150; lon <= 180; lon += 30) {
+        mapContext.beginPath();
+        for (let lat = -82; lat <= 82; lat += 4) {
+          const [x, y] = project(lat, lon);
+          if (lat === -82) mapContext.moveTo(x, y);
+          else mapContext.lineTo(x, y);
+        }
+        mapContext.stroke();
+      }
+
+      mapContext.fillStyle = 'rgba(214, 181, 109, .84)';
+      mapContext.strokeStyle = 'rgba(255, 241, 188, .78)';
+      mapContext.lineWidth = 2.4;
+      mapContext.lineJoin = 'round';
+      polygons.forEach((continent) => {
+        mapContext.beginPath();
+        continent.forEach(([lat, lon], index) => {
+          const [x, y] = project(lat, lon);
+          if (index === 0) mapContext.moveTo(x, y);
+          else mapContext.lineTo(x, y);
+        });
+        mapContext.closePath();
+        mapContext.fill();
+        mapContext.stroke();
+      });
+
+      const earthTexture = new THREE.CanvasTexture(mapCanvas);
+      earthTexture.colorSpace = THREE.SRGBColorSpace;
+      earthTexture.wrapS = THREE.RepeatWrapping;
+      earthTexture.minFilter = THREE.LinearFilter;
+      earthTexture.magFilter = THREE.LinearFilter;
+      earthTexture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+
+      const earth = new THREE.Mesh(
+        new THREE.SphereGeometry(1.16, 72, 48),
+        new THREE.MeshBasicMaterial({
+          map: earthTexture,
+          transparent: true,
+          opacity: 0.92,
+          depthWrite: false
+        })
+      );
+      globeGroup.add(earth);
+
+      const wire = new THREE.Mesh(
+        new THREE.SphereGeometry(1.18, 24, 16),
+        new THREE.MeshBasicMaterial({
+          color: 0xfff1bc,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.08,
+          depthWrite: false
+        })
+      );
+      globeGroup.add(wire);
+
+      const ringGroup = new THREE.Group();
+      [0, Math.PI / 3, -Math.PI / 3].forEach((rotationValue, index) => {
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(1.3 + index * 0.055, 0.007, 8, 120),
+          new THREE.MeshBasicMaterial({
+            color: index === 1 ? 0x315c58 : 0xd6b56d,
+            transparent: true,
+            opacity: index === 1 ? 0.42 : 0.32,
+            depthWrite: false
+          })
+        );
+        ring.rotation.x = Math.PI / 2;
+        ring.rotation.y = rotationValue;
+        ringGroup.add(ring);
+      });
+      globeGroup.add(ringGroup);
+
+      const latLonToVector = (lat, lon, radius = 1.2) => {
+        const phi = (90 - lat) * Math.PI / 180;
+        const theta = (lon + 180) * Math.PI / 180;
+        return new THREE.Vector3(
+          -radius * Math.sin(phi) * Math.cos(theta),
+          radius * Math.cos(phi),
+          radius * Math.sin(phi) * Math.sin(theta)
+        );
+      };
+
+      const connectionMaterial = new THREE.MeshBasicMaterial({
+        color: 0x4f827d,
+        transparent: true,
+        opacity: 0.78,
+        depthWrite: false
+      });
+      const nodeMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffe39a,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false
+      });
+      const hub = [37.98, 23.72];
+      [[40.71, -74.01], [52.52, 13.4], [25.2, 55.27], [35.68, 139.69]].forEach((destination) => {
+        const start = latLonToVector(hub[0], hub[1], 1.21);
+        const end = latLonToVector(destination[0], destination[1], 1.21);
+        const control = start.clone().add(end).normalize().multiplyScalar(1.65);
+        const curve = new THREE.QuadraticBezierCurve3(start, control, end);
+        const arc = new THREE.Mesh(
+          new THREE.TubeGeometry(curve, 42, 0.012, 6, false),
+          connectionMaterial
+        );
+        globeGroup.add(arc);
+
+        const node = new THREE.Mesh(new THREE.SphereGeometry(0.032, 12, 8), nodeMaterial);
+        node.position.copy(end);
+        globeGroup.add(node);
+      });
+
+      const hubNode = new THREE.Mesh(new THREE.SphereGeometry(0.052, 14, 10), nodeMaterial);
+      hubNode.position.copy(latLonToVector(hub[0], hub[1], 1.22));
+      globeGroup.add(hubNode);
+
+      const resizeGlobe = () => {
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width < 2 || rect.height < 2) return;
+        renderer.setSize(rect.width, rect.height, false);
+        camera.aspect = rect.width / rect.height;
+        camera.updateProjectionMatrix();
+        renderer.render(scene, camera);
+      };
+      resizeGlobe();
+
+      if ('ResizeObserver' in window) {
+        const observer = new ResizeObserver(resizeGlobe);
+        observer.observe(shell);
+      } else {
+        window.addEventListener('resize', resizeGlobe);
+      }
+
+      let globeFrame = 0;
+      let lastGlobeTime = 0;
+      const animateGlobe = (time) => {
+        const delta = lastGlobeTime ? Math.min((time - lastGlobeTime) / 1000, 0.05) : 0;
+        lastGlobeTime = time;
+        if (inView) {
+          if (!reducedMotion) globeGroup.rotation.y += delta * 0.13;
+          ringGroup.rotation.z = time * 0.000045;
+          const pulse = 0.84 + Math.sin(time * 0.0024) * 0.12;
+          nodeMaterial.opacity = pulse;
+          renderer.render(scene, camera);
+        }
+        globeFrame = window.requestAnimationFrame(animateGlobe);
+      };
+      globeFrame = window.requestAnimationFrame(animateGlobe);
+      window.addEventListener('pagehide', () => window.cancelAnimationFrame(globeFrame), { once: true });
+    } catch (error) {
+      shell.classList.add('is-fallback');
+      console.warn('[EXPERIENCE GLOBE] Three.js unavailable:', error);
+    }
+  };
+
+  initExperienceGlobe();
+})();
+
+/* =========================
    Depth tilt panels
    ========================= */
 document.querySelectorAll('[data-tilt-panel], [data-depth-card]').forEach((panel) => {

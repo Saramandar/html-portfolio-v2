@@ -245,7 +245,7 @@
             title="Pause">⏸</button>
   </div>
 </div>
-  
+
   <!-- Content -->
   <div class="hp-stage-content container">
     <div class="row align-items-center justify-content-between g-5">
@@ -423,7 +423,7 @@
 </section>
 
 <section class="experience-section work-section" id="experience" aria-label="Work experience">
-  <div class="experience-inner">
+  <div class="experience-inner experience-orbit-inner">
     <div class="experience-heading">
       <p class="home-section-label poppins-regular">Work Experience</p>
       <h2 class="poppins-light">From customer reality to quality control and digital execution.</h2>
@@ -431,39 +431,63 @@
         The professional path combines production quality, customer-facing discipline, creative work and AI-supported content systems.
       </p>
     </div>
-    <div class="timeline-lux">
-      <article data-depth-card>
-        <img src="./assets/card_images/TP-Quality_Assurance_Analyst.jpg" alt="Quality assurance analyst role">
-        <div>
-          <span>2022 - Now</span>
-          <h3 class="poppins-regular">Quality Assurance Analyst</h3>
-          <p class="poppins-light">Securing KPI-driven production quality in Athens with a focus on precision, consistency and measurable improvement.</p>
-        </div>
-      </article>
-      <article data-depth-card>
-        <img src="./assets/card_images/TP-Customer_Expert.jpg" alt="Customer expert role">
-        <div>
-          <span>2017 - 2022</span>
-          <h3 class="poppins-regular">Customer Expert</h3>
-          <p class="poppins-light">Solving customer cases with patience, structure and direct understanding of user needs.</p>
-        </div>
-      </article>
-      <article data-depth-card>
-        <img src="./assets/card_images/fiverr-graphic-designer.jpg" alt="Graphic design work">
-        <div>
-          <span>Creative Work</span>
-          <h3 class="poppins-regular">Junior Graphic Designer</h3>
-          <p class="poppins-light">Photo manipulation and custom visual execution with a practical eye for composition.</p>
-        </div>
-      </article>
-      <article data-depth-card>
-        <img src="./assets/card_images/AI_Avatar.jpg" alt="AI avatar creation">
-        <div>
-          <span>AI Content</span>
-          <h3 class="poppins-regular">AI Avatar Creation</h3>
-          <p class="poppins-light">Avatar-based training, onboarding and UGC concepts using modern AI production tools.</p>
-        </div>
-      </article>
+    <div class="experience-orbit-stage" data-experience-orbit>
+      <div class="experience-orbit-guide" aria-hidden="true"></div>
+
+      <div class="experience-globe-shell" aria-hidden="true">
+        <canvas class="experience-globe-canvas"></canvas>
+        <span class="experience-globe-ring"></span>
+      </div>
+
+      <div class="experience-orbit-track" role="list" aria-label="Professional experience">
+        <article class="experience-orbit-card" role="listitem"
+          data-period="2022 - Now"
+          data-title="Quality Assurance Analyst"
+          data-copy="Securing KPI-driven production quality in Athens with a focus on precision, consistency and measurable improvement.">
+          <button class="experience-orbit-trigger" type="button" aria-controls="experienceDetail" aria-expanded="false">
+            <img src="./assets/card_images/TP-Quality_Assurance_Analyst.jpg" alt="Quality assurance analyst role">
+            <span class="experience-card-title poppins-regular">Quality Assurance</span>
+          </button>
+        </article>
+
+        <article class="experience-orbit-card" role="listitem"
+          data-period="2017 - 2022"
+          data-title="Customer Expert"
+          data-copy="Solving customer cases with patience, structure and direct understanding of user needs.">
+          <button class="experience-orbit-trigger" type="button" aria-controls="experienceDetail" aria-expanded="false">
+            <img src="./assets/card_images/TP-Customer_Expert.jpg" alt="Customer expert role">
+            <span class="experience-card-title poppins-regular">Customer Expert</span>
+          </button>
+        </article>
+
+        <article class="experience-orbit-card" role="listitem"
+          data-period="Creative Work"
+          data-title="Junior Graphic Designer"
+          data-copy="Photo manipulation and custom visual execution with a practical eye for composition.">
+          <button class="experience-orbit-trigger" type="button" aria-controls="experienceDetail" aria-expanded="false">
+            <img src="./assets/card_images/fiverr-graphic-designer.jpg" alt="Graphic design work">
+            <span class="experience-card-title poppins-regular">Graphic Design</span>
+          </button>
+        </article>
+
+        <article class="experience-orbit-card" role="listitem"
+          data-period="AI Content"
+          data-title="AI Avatar Creation"
+          data-copy="Avatar-based training, onboarding and UGC concepts using modern AI production tools.">
+          <button class="experience-orbit-trigger" type="button" aria-controls="experienceDetail" aria-expanded="false">
+            <img src="./assets/card_images/AI_Avatar.jpg" alt="AI avatar creation">
+            <span class="experience-card-title poppins-regular">AI Content</span>
+          </button>
+        </article>
+      </div>
+
+      <aside class="experience-detail" id="experienceDetail" role="dialog" aria-modal="false" aria-hidden="true" aria-labelledby="experienceDetailTitle">
+        <button class="experience-detail-close" type="button" aria-label="Close experience details">&times;</button>
+        <span class="experience-detail-period poppins-regular" data-experience-period></span>
+        <h3 class="poppins-light" id="experienceDetailTitle" data-experience-title></h3>
+        <p class="poppins-light" data-experience-copy></p>
+        <span class="experience-detail-index poppins-regular" data-experience-index aria-hidden="true"></span>
+      </aside>
     </div>
   </div>
 </section>
