@@ -1,3 +1,8 @@
+const loadThree = async () => {
+  if (window.THREE?.WebGLRenderer) return window.THREE;
+  return import('./assets/vendor/three/three.module.js');
+};
+
 /* =========================
    Loading screen
    ========================= */
@@ -185,7 +190,7 @@
   });
 
   try {
-    const THREE = await import('./assets/vendor/three/three.module.js');
+    const THREE = await loadThree();
     const renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
@@ -202,6 +207,9 @@
     scene.add(group);
 
     const loadEarthPolygons = async () => {
+      if (Array.isArray(window.NATURAL_EARTH_POLYGONS)) {
+        return window.NATURAL_EARTH_POLYGONS;
+      }
       try {
         const response = await fetch('./assets/vendor/natural-earth/ne_110m_land.polygons.json');
         if (!response.ok) return null;
@@ -1156,7 +1164,7 @@ window.addEventListener('pageshow', (e) => {
   }, { passive: true });
 
   try {
-    const THREE = await import('./assets/vendor/three/three.module.js');
+    const THREE = await loadThree();
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
@@ -1300,19 +1308,19 @@ window.addEventListener('pageshow', (e) => {
 })();
 
 /* =========================
-   Work experience orbit
+   Project orbit
    ========================= */
 (function () {
-  const stage = document.querySelector('[data-experience-orbit]');
-  const cards = [...document.querySelectorAll('.experience-orbit-card')];
-  const detail = document.getElementById('experienceDetail');
+  const stage = document.querySelector('[data-project-orbit]');
+  const cards = [...document.querySelectorAll('.project-orbit-card')];
+  const detail = document.getElementById('projectDetail');
   if (!stage || !cards.length || !detail) return;
 
-  const detailPeriod = detail.querySelector('[data-experience-period]');
-  const detailTitle = detail.querySelector('[data-experience-title]');
-  const detailCopy = detail.querySelector('[data-experience-copy]');
-  const detailIndex = detail.querySelector('[data-experience-index]');
-  const detailClose = detail.querySelector('.experience-detail-close');
+  const detailPeriod = detail.querySelector('[data-project-period]');
+  const detailTitle = detail.querySelector('[data-project-title]');
+  const detailCopy = detail.querySelector('[data-project-copy]');
+  const detailIndex = detail.querySelector('[data-project-index]');
+  const detailClose = detail.querySelector('.project-detail-close');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hoverPointer = window.matchMedia('(hover: hover) and (pointer: fine)');
   let rotation = -0.72;
@@ -1375,7 +1383,7 @@ window.addEventListener('pageshow', (e) => {
     detailSwapToken += 1;
     window.clearTimeout(detailSwapTimer);
     activeCard.classList.remove('is-active');
-    activeCard.querySelector('.experience-orbit-trigger')?.setAttribute('aria-expanded', 'false');
+    activeCard.querySelector('.project-orbit-trigger')?.setAttribute('aria-expanded', 'false');
     activeCard = null;
     stage.classList.remove('is-detail-open', 'is-detail-switching', 'detail-left');
     detail.setAttribute('aria-hidden', 'true');
@@ -1398,7 +1406,7 @@ window.addEventListener('pageshow', (e) => {
     cards.forEach((item) => {
       const selected = item === card;
       item.classList.toggle('is-active', selected);
-      item.querySelector('.experience-orbit-trigger')?.setAttribute('aria-expanded', String(selected));
+      item.querySelector('.project-orbit-trigger')?.setAttribute('aria-expanded', String(selected));
     });
 
     activeCard = card;
@@ -1426,7 +1434,7 @@ window.addEventListener('pageshow', (e) => {
   };
 
   cards.forEach((card) => {
-    const trigger = card.querySelector('.experience-orbit-trigger');
+    const trigger = card.querySelector('.project-orbit-trigger');
     if (!trigger) return;
 
     trigger.addEventListener('pointermove', (event) => {
@@ -1448,7 +1456,7 @@ window.addEventListener('pageshow', (e) => {
 
   document.addEventListener('pointerdown', (event) => {
     if (!activeCard) return;
-    if (detail.contains(event.target) || event.target.closest('.experience-orbit-card')) return;
+    if (detail.contains(event.target) || event.target.closest('.project-orbit-card')) return;
     closeDetail();
   });
 
@@ -1493,13 +1501,13 @@ window.addEventListener('pageshow', (e) => {
   orbitFrame = window.requestAnimationFrame(animateOrbit);
   window.addEventListener('pagehide', () => window.cancelAnimationFrame(orbitFrame), { once: true });
 
-  const initExperienceGlobe = async () => {
-    const canvas = stage.querySelector('.experience-globe-canvas');
-    const shell = stage.querySelector('.experience-globe-shell');
+  const initProjectGlobe = async () => {
+    const canvas = stage.querySelector('.project-globe-canvas');
+    const shell = stage.querySelector('.project-globe-shell');
     if (!canvas || !shell) return;
 
     try {
-      const THREE = await import('./assets/vendor/three/three.module.js');
+      const THREE = await loadThree();
       const renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
@@ -1526,12 +1534,15 @@ window.addEventListener('pageshow', (e) => {
         [[31,66],[21,78],[12,86],[5,96],[-3,104],[-8,116],[-18,123],[-26,134],[-38,145],[-43,157],[-35,168],[-23,155],[-15,141]]
       ];
 
-      let polygons = fallbackPolygons;
-      try {
-        const response = await fetch('./assets/vendor/natural-earth/ne_110m_land.polygons.json');
-        const data = response.ok ? await response.json() : null;
-        if (Array.isArray(data?.polygons)) polygons = data.polygons;
-      } catch (_) {}
+      const embeddedPolygons = window.NATURAL_EARTH_POLYGONS;
+      let polygons = Array.isArray(embeddedPolygons) ? embeddedPolygons : fallbackPolygons;
+      if (!Array.isArray(embeddedPolygons)) {
+        try {
+          const response = await fetch('./assets/vendor/natural-earth/ne_110m_land.polygons.json');
+          const data = response.ok ? await response.json() : null;
+          if (Array.isArray(data?.polygons)) polygons = data.polygons;
+        } catch (_) {}
+      }
 
       const mapCanvas = document.createElement('canvas');
       mapCanvas.width = 1536;
@@ -1704,11 +1715,11 @@ window.addEventListener('pageshow', (e) => {
       window.addEventListener('pagehide', () => window.cancelAnimationFrame(globeFrame), { once: true });
     } catch (error) {
       shell.classList.add('is-fallback');
-      console.warn('[EXPERIENCE GLOBE] Three.js unavailable:', error);
+      console.warn('[PROJECT GLOBE] Three.js unavailable:', error);
     }
   };
 
-  initExperienceGlobe();
+  initProjectGlobe();
 })();
 
 /* =========================

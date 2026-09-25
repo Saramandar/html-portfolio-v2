@@ -1509,6 +1509,43 @@ footer.text-bg-dark {
   border-top-color: rgba(214, 181, 109, 0.16);
 }
 
+footer .nav-link {
+  position: relative;
+  border-radius: 0;
+  color: rgba(255, 248, 232, .72) !important;
+  text-shadow: 0 0 0 transparent;
+  transition:
+    color .32s ease,
+    text-shadow .42s ease;
+}
+
+footer .nav-link::after {
+  content: "";
+  position: absolute;
+  left: .5rem;
+  right: .5rem;
+  bottom: .15rem;
+  height: 1px;
+  background: linear-gradient(90deg, #d6b56d, #fff1bc);
+  box-shadow: 0 0 12px rgba(214, 181, 109, .55);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform .42s cubic-bezier(.2, .8, .2, 1);
+}
+
+footer .nav-link:hover,
+footer .nav-link:focus-visible {
+  color: #fff8e8 !important;
+  text-shadow: 0 0 16px rgba(214, 181, 109, .58);
+  outline: none;
+}
+
+footer .nav-link:hover::after,
+footer .nav-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
 @media (max-width: 991.98px) {
   .hp-stage {
     background:
@@ -2940,11 +2977,10 @@ body.about-warping .about-suite {
 
 .work-section {
   color: #fff8e8;
-  padding-right: clamp(1rem, 3vw, 3rem);
-  padding-left: clamp(1rem, 3vw, 3rem);
   background:
-    radial-gradient(circle at 50% 58%, rgba(49, 92, 88, .2), transparent 31%),
-    linear-gradient(180deg, #17120d 0%, #090806 100%);
+    radial-gradient(circle at 12% 10%, rgba(214, 181, 109, .22), transparent 32%),
+    radial-gradient(circle at 82% 44%, rgba(49, 92, 88, .24), transparent 34%),
+    linear-gradient(180deg, #17120d 0%, #0b0907 100%);
 }
 
 .work-section .experience-heading p:last-child,
@@ -2952,22 +2988,78 @@ body.about-warping .about-suite {
   color: rgba(255, 248, 232, .72);
 }
 
-.experience-orbit-inner {
+.timeline-lux {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(.9rem, 1.8vw, 1.25rem);
+}
+
+.timeline-lux article {
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 1px solid rgba(214, 181, 109, .22);
+  color: #fff8e8;
+  box-shadow: 0 32px 86px rgba(0, 0, 0, .32);
+}
+
+.timeline-lux article::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(23, 18, 13, .10) 0%, rgba(23, 18, 13, .88) 72%),
+    linear-gradient(90deg, rgba(49, 92, 88, .22), transparent 50%);
+}
+
+.timeline-lux img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.72) contrast(1.08) brightness(.66) sepia(.14);
+  transform: scale(1.02);
+}
+
+.timeline-lux div {
+  position: relative;
+  z-index: 2;
+  padding: clamp(1rem, 2vw, 1.55rem);
+}
+
+.timeline-lux h3 {
+  margin: .8rem 0 .8rem;
+  color: #fff8e8;
+  font-size: clamp(1.25rem, 1.8vw, 1.85rem);
+}
+
+.timeline-lux p {
+  margin: 0;
+  color: rgba(255, 248, 232, .72);
+  line-height: 1.68;
+}
+
+.project-orbit-inner {
   width: min(1460px, 100%);
 }
 
-.work-section .experience-heading {
+.projects-section .experience-heading {
   width: min(1180px, 100%);
   margin-right: auto;
   margin-left: auto;
   margin-bottom: clamp(1.5rem, 3vw, 2.6rem);
 }
 
-.work-section .experience-heading h2 {
+.projects-section .experience-heading h2 {
   max-width: 12ch;
 }
 
-.experience-orbit-stage {
+.project-orbit-stage {
   position: relative;
   height: clamp(620px, 76svh, 830px);
   min-height: 620px;
@@ -2983,8 +3075,8 @@ body.about-warping .about-suite {
   background-size: 120px 120px, 120px 120px, auto, auto;
 }
 
-.experience-orbit-stage::before,
-.experience-orbit-stage::after {
+.project-orbit-stage::before,
+.project-orbit-stage::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -2992,11 +3084,11 @@ body.about-warping .about-suite {
   pointer-events: none;
 }
 
-.experience-orbit-stage::before {
+.project-orbit-stage::before {
   background: radial-gradient(ellipse at center, transparent 44%, rgba(9, 8, 6, .8) 100%);
 }
 
-.experience-orbit-stage::after {
+.project-orbit-stage::after {
   z-index: 51;
   opacity: .2;
   background: linear-gradient(180deg, transparent 50%, rgba(255, 255, 255, .045) 50%);
@@ -3004,7 +3096,7 @@ body.about-warping .about-suite {
   mix-blend-mode: soft-light;
 }
 
-.experience-orbit-guide {
+.project-orbit-guide {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -3019,8 +3111,8 @@ body.about-warping .about-suite {
     inset 0 0 70px rgba(49, 92, 88, .04);
 }
 
-.experience-orbit-guide::before,
-.experience-orbit-guide::after {
+.project-orbit-guide::before,
+.project-orbit-guide::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -3030,18 +3122,18 @@ body.about-warping .about-suite {
   transform: translate(-50%, -50%);
 }
 
-.experience-orbit-guide::before {
+.project-orbit-guide::before {
   width: 74%;
   height: 132%;
 }
 
-.experience-orbit-guide::after {
+.project-orbit-guide::after {
   width: 48%;
   height: 166%;
   border-color: rgba(49, 92, 88, .16);
 }
 
-.experience-globe-shell {
+.project-globe-shell {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -3059,16 +3151,16 @@ body.about-warping .about-suite {
   pointer-events: none;
 }
 
-.experience-globe-canvas {
+.project-globe-canvas {
   position: absolute;
   inset: -20%;
   width: 140%;
   height: 140%;
 }
 
-.experience-globe-ring,
-.experience-globe-shell::before,
-.experience-globe-shell::after {
+.project-globe-ring,
+.project-globe-shell::before,
+.project-globe-shell::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -3078,24 +3170,24 @@ body.about-warping .about-suite {
   transform: translate(-50%, -50%);
 }
 
-.experience-globe-ring {
+.project-globe-ring {
   width: 172%;
   height: 54%;
   transform: translate(-50%, -50%) rotate(-12deg);
 }
 
-.experience-globe-shell::before {
+.project-globe-shell::before {
   width: 136%;
   height: 136%;
 }
 
-.experience-globe-shell::after {
+.project-globe-shell::after {
   width: 62%;
   height: 162%;
   border-color: rgba(49, 92, 88, .24);
 }
 
-.experience-orbit-track {
+.project-orbit-track {
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -3103,7 +3195,7 @@ body.about-warping .about-suite {
   transform-style: preserve-3d;
 }
 
-.experience-orbit-card {
+.project-orbit-card {
   --card-width: clamp(190px, 21vw, 310px);
   --card-height: clamp(132px, 14vw, 205px);
   position: absolute;
@@ -3117,22 +3209,22 @@ body.about-warping .about-suite {
   will-change: transform, opacity;
 }
 
-.experience-orbit-card:nth-child(2) {
+.project-orbit-card:nth-child(2) {
   --card-width: clamp(160px, 16vw, 240px);
   --card-height: clamp(190px, 21vw, 310px);
 }
 
-.experience-orbit-card:nth-child(3) {
+.project-orbit-card:nth-child(3) {
   --card-width: clamp(185px, 19vw, 285px);
   --card-height: clamp(130px, 13vw, 195px);
 }
 
-.experience-orbit-card:nth-child(4) {
+.project-orbit-card:nth-child(4) {
   --card-width: clamp(160px, 17vw, 250px);
   --card-height: clamp(176px, 19vw, 280px);
 }
 
-.experience-orbit-trigger {
+.project-orbit-trigger {
   position: relative;
   width: 100%;
   height: 100%;
@@ -3151,8 +3243,8 @@ body.about-warping .about-suite {
     box-shadow .7s ease;
 }
 
-.experience-orbit-trigger::before,
-.experience-orbit-trigger::after {
+.project-orbit-trigger::before,
+.project-orbit-trigger::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -3160,17 +3252,17 @@ body.about-warping .about-suite {
   pointer-events: none;
 }
 
-.experience-orbit-trigger::before {
+.project-orbit-trigger::before {
   background: linear-gradient(180deg, rgba(9, 8, 6, .02) 38%, rgba(9, 8, 6, .9) 100%);
 }
 
-.experience-orbit-trigger::after {
+.project-orbit-trigger::after {
   inset: 7px;
   border: 1px solid rgba(255, 248, 232, .16);
   border-radius: 6px;
 }
 
-.experience-orbit-trigger img {
+.project-orbit-trigger img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -3181,7 +3273,7 @@ body.about-warping .about-suite {
     transform 1.1s cubic-bezier(.2, .8, .2, 1);
 }
 
-.experience-card-title {
+.project-card-title {
   position: absolute;
   z-index: 3;
   letter-spacing: 0;
@@ -3189,7 +3281,7 @@ body.about-warping .about-suite {
   pointer-events: none;
 }
 
-.experience-card-title {
+.project-card-title {
   left: 17px;
   right: 17px;
   bottom: 16px;
@@ -3197,14 +3289,14 @@ body.about-warping .about-suite {
   font-size: clamp(.69rem, .82vw, .8rem);
 }
 
-.experience-orbit-card.is-active {
+.project-orbit-card.is-active {
   z-index: 48 !important;
   opacity: 1 !important;
 }
 
-.experience-orbit-card.is-active .experience-orbit-trigger,
-.experience-orbit-trigger:hover,
-.experience-orbit-trigger:focus-visible {
+.project-orbit-card.is-active .project-orbit-trigger,
+.project-orbit-trigger:hover,
+.project-orbit-trigger:focus-visible {
   border-color: rgba(226, 201, 130, .82);
   box-shadow:
     0 34px 90px rgba(0, 0, 0, .58),
@@ -3213,22 +3305,22 @@ body.about-warping .about-suite {
   outline: none;
 }
 
-.experience-orbit-card.is-active .experience-orbit-trigger img,
-.experience-orbit-trigger:hover img,
-.experience-orbit-trigger:focus-visible img {
+.project-orbit-card.is-active .project-orbit-trigger img,
+.project-orbit-trigger:hover img,
+.project-orbit-trigger:focus-visible img {
   filter: grayscale(0) sepia(.06) saturate(.92) contrast(1.08) brightness(.9);
   transform: scale(1);
 }
 
-.experience-detail {
-  --experience-detail-edge: clamp(1.2rem, 4vw, 4.5rem);
-  --experience-detail-width: min(410px, calc(100% - 2.4rem));
+.project-detail {
+  --project-detail-edge: clamp(1.2rem, 4vw, 4.5rem);
+  --project-detail-width: min(410px, calc(100% - 2.4rem));
   position: absolute;
-  left: calc(100% - var(--experience-detail-width) - var(--experience-detail-edge));
+  left: calc(100% - var(--project-detail-width) - var(--project-detail-edge));
   right: auto;
   bottom: clamp(1.2rem, 5vw, 4.5rem);
   z-index: 70;
-  width: var(--experience-detail-width);
+  width: var(--project-detail-width);
   min-height: 300px;
   padding: clamp(1.45rem, 3vw, 2.2rem);
   overflow: hidden;
@@ -3255,11 +3347,11 @@ body.about-warping .about-suite {
     visibility 0s linear .7s;
 }
 
-.experience-orbit-stage.detail-left .experience-detail {
-  left: var(--experience-detail-edge);
+.project-orbit-stage.detail-left .project-detail {
+  left: var(--project-detail-edge);
 }
 
-.experience-orbit-stage.is-detail-open .experience-detail {
+.project-orbit-stage.is-detail-open .project-detail {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -3267,7 +3359,7 @@ body.about-warping .about-suite {
   transition-delay: 0s;
 }
 
-.experience-detail::before {
+.project-detail::before {
   content: "";
   position: absolute;
   left: 0;
@@ -3278,7 +3370,7 @@ body.about-warping .about-suite {
   background: #315c58;
 }
 
-.experience-detail::after {
+.project-detail::after {
   content: "";
   position: absolute;
   inset: 1px;
@@ -3289,7 +3381,7 @@ body.about-warping .about-suite {
   pointer-events: none;
 }
 
-.experience-detail-period {
+.project-detail-period {
   position: relative;
   z-index: 2;
   display: block;
@@ -3300,10 +3392,10 @@ body.about-warping .about-suite {
   text-transform: uppercase;
 }
 
-.experience-detail-period,
-.experience-detail h3,
-.experience-detail p,
-.experience-detail-index {
+.project-detail-period,
+.project-detail h3,
+.project-detail p,
+.project-detail-index {
   opacity: 1;
   filter: blur(0);
   transform: translateY(0);
@@ -3314,17 +3406,17 @@ body.about-warping .about-suite {
   will-change: opacity, filter, transform;
 }
 
-.experience-orbit-stage.is-detail-switching .experience-detail-period,
-.experience-orbit-stage.is-detail-switching .experience-detail h3,
-.experience-orbit-stage.is-detail-switching .experience-detail p,
-.experience-orbit-stage.is-detail-switching .experience-detail-index {
+.project-orbit-stage.is-detail-switching .project-detail-period,
+.project-orbit-stage.is-detail-switching .project-detail h3,
+.project-orbit-stage.is-detail-switching .project-detail p,
+.project-orbit-stage.is-detail-switching .project-detail-index {
   opacity: 0;
   filter: blur(5px);
   transform: translateY(7px);
   transition-duration: .16s, .18s, .2s;
 }
 
-.experience-detail h3 {
+.project-detail h3 {
   position: relative;
   z-index: 2;
   max-width: 12ch;
@@ -3334,7 +3426,7 @@ body.about-warping .about-suite {
   line-height: .98;
 }
 
-.experience-detail p {
+.project-detail p {
   position: relative;
   z-index: 2;
   max-width: 37ch;
@@ -3344,7 +3436,7 @@ body.about-warping .about-suite {
   line-height: 1.65;
 }
 
-.experience-detail-index {
+.project-detail-index {
   position: absolute;
   right: 1rem;
   bottom: -.45rem;
@@ -3354,7 +3446,7 @@ body.about-warping .about-suite {
   letter-spacing: 0;
 }
 
-.experience-detail-close {
+.project-detail-close {
   position: absolute;
   right: .85rem;
   top: .8rem;
@@ -3373,81 +3465,81 @@ body.about-warping .about-suite {
   transition: color .25s ease, transform .25s ease;
 }
 
-.experience-detail-close:hover,
-.experience-detail-close:focus-visible {
+.project-detail-close:hover,
+.project-detail-close:focus-visible {
   color: #315c58;
   transform: rotate(90deg);
   outline: 1px solid rgba(49, 92, 88, .34);
 }
 
 @media (max-width: 991.98px) {
-  .experience-orbit-stage {
+  .project-orbit-stage {
     height: clamp(640px, 82svh, 760px);
     min-height: 640px;
   }
 
-  .experience-orbit-guide {
+  .project-orbit-guide {
     width: 94%;
   }
 
-  .experience-orbit-card {
+  .project-orbit-card {
     --card-width: clamp(170px, 31vw, 250px);
     --card-height: clamp(118px, 21vw, 174px);
   }
 
-  .experience-orbit-card:nth-child(2),
-  .experience-orbit-card:nth-child(4) {
+  .project-orbit-card:nth-child(2),
+  .project-orbit-card:nth-child(4) {
     --card-width: clamp(145px, 25vw, 205px);
     --card-height: clamp(170px, 31vw, 250px);
   }
 
-  .experience-orbit-card:nth-child(3) {
+  .project-orbit-card:nth-child(3) {
     --card-width: clamp(165px, 29vw, 235px);
     --card-height: clamp(114px, 20vw, 165px);
   }
 }
 
 @media (max-width: 575.98px) {
-  .work-section {
+  .projects-section {
     padding-right: .75rem;
     padding-left: .75rem;
   }
 
-  .experience-orbit-stage {
+  .project-orbit-stage {
     height: 680px;
     min-height: 680px;
   }
 
-  .experience-orbit-guide {
+  .project-orbit-guide {
     width: 126%;
     aspect-ratio: 1.12 / 1;
   }
 
-  .experience-globe-shell {
+  .project-globe-shell {
     width: 126px;
   }
 
-  .experience-orbit-card,
-  .experience-orbit-card:nth-child(3) {
+  .project-orbit-card,
+  .project-orbit-card:nth-child(3) {
     --card-width: clamp(142px, 43vw, 178px);
     --card-height: clamp(98px, 30vw, 124px);
   }
 
-  .experience-orbit-card:nth-child(2),
-  .experience-orbit-card:nth-child(4) {
+  .project-orbit-card:nth-child(2),
+  .project-orbit-card:nth-child(4) {
     --card-width: clamp(124px, 35vw, 150px);
     --card-height: clamp(148px, 44vw, 184px);
   }
 
-  .experience-card-title {
+  .project-card-title {
     left: 12px;
     right: 12px;
     bottom: 11px;
     font-size: .62rem;
   }
 
-  .experience-detail,
-  .experience-orbit-stage.detail-left .experience-detail {
+  .project-detail,
+  .project-orbit-stage.detail-left .project-detail {
     left: 50%;
     right: auto;
     bottom: 1rem;
@@ -3456,28 +3548,35 @@ body.about-warping .about-suite {
     transform: translate(-50%, 18px) scale(.97);
   }
 
-  .experience-orbit-stage.is-detail-open .experience-detail {
+  .project-orbit-stage.is-detail-open .project-detail {
     transform: translate(-50%, 0) scale(1);
   }
 
-  .experience-detail h3 {
+  .project-detail h3 {
     font-size: clamp(1.65rem, 8vw, 2.25rem);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .experience-orbit-trigger,
-  .experience-orbit-trigger img,
-  .experience-detail {
+  .project-orbit-trigger,
+  .project-orbit-trigger img,
+  .project-detail {
     transition-duration: .01ms;
   }
 }
 
 .projects-section {
-  color: #17120d;
+  color: #fff8e8;
+  padding-right: clamp(1rem, 3vw, 3rem);
+  padding-left: clamp(1rem, 3vw, 3rem);
   background:
-    radial-gradient(circle at 78% 20%, rgba(214, 181, 109, .24), transparent 32%),
-    linear-gradient(180deg, #fffaf0 0%, #f4e7cc 100%);
+    radial-gradient(circle at 50% 58%, rgba(49, 92, 88, .2), transparent 31%),
+    linear-gradient(180deg, #17120d 0%, #090806 100%);
+}
+
+.projects-section .experience-heading p:last-child,
+.projects-section .home-section-label {
+  color: rgba(255, 248, 232, .72);
 }
 
 .project-preview-panel {
