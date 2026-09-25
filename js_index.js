@@ -142,6 +142,318 @@ const loadThree = async () => {
   let isRevealingAbout = false;
   let refreshPortalScene = () => {};
 
+  const canUseWebGL = () => {
+    try {
+      const testCanvas = document.createElement('canvas');
+      return Boolean(testCanvas.getContext('webgl2') || testCanvas.getContext('webgl'));
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const startPortalCanvasFallback = () => {
+    let fallbackCanvas = canvas;
+    let context = fallbackCanvas.getContext('2d');
+
+    if (!context) {
+      fallbackCanvas = canvas.cloneNode(false);
+      canvas.replaceWith(fallbackCanvas);
+      context = fallbackCanvas.getContext('2d');
+    }
+    if (!context) return;
+
+    fallbackCanvas.dataset.engine = 'canvas-2d-fallback';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const polygons = Array.isArray(window.NATURAL_EARTH_POLYGONS)
+      ? window.NATURAL_EARTH_POLYGONS
+      : [];
+    const destinations = [
+      [21.31, -157.86],
+      [40.71, -74.01],
+      [-33.87, 151.21],
+      [52.52, 13.4],
+      [25.2, 55.27],
+      [22.32, 114.17],
+      [35.68, 139.69]
+    ];
+    const greece = [37.98, 23.72];
+    const imageCache = new Map();
+    let width = 1;
+    let height = 1;
+    let rotation = -0.38;
+    let lastTime = 0;
+    let currentImage = null;
+    let imageOpacity = 0;
+    let targetImageOpacity = 0;
+    let imageRequest = 0;
+    let isDragging = false;
+    let lastPointerX = 0;
+
+    const loadImage = (src) => new Promise((resolve) => {
+      if (imageCache.has(src)) {
+        resolve(imageCache.get(src));
+        return;
+      }
+      const image = new Image();
+      image.decoding = 'async';
+      image.addEventListener('load', () => {
+        imageCache.set(src, image);
+        resolve(image);
+      }, { once: true });
+      image.addEventListener('error', () => resolve(null), { once: true });
+      image.src = src;
+    });
+
+    const resizeFallback = () => {
+      const rect = fallbackCanvas.getBoundingClientRect();
+      const nextWidth = Math.max(1, Math.round(rect.width));
+      const nextHeight = Math.max(1, Math.round(rect.height));
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const bufferWidth = Math.round(nextWidth * pixelRatio);
+      const bufferHeight = Math.round(nextHeight * pixelRatio);
+      width = nextWidth;
+      height = nextHeight;
+      if (fallbackCanvas.width !== bufferWidth || fallbackCanvas.height !== bufferHeight) {
+        fallbackCanvas.width = bufferWidth;
+        fallbackCanvas.height = bufferHeight;
+      }
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    };
+
+    const getLayout = () => {
+      const mobile = width < 430 || height > width * 0.86;
+      const radius = mobile
+        ? Math.min(width * 0.34, height * 0.3)
+        : Math.min(width * 0.17, height * 0.31);
+      return {
+        mobile,
+        radius,
+        globeX: mobile ? width * 0.5 : width * 0.32,
+        photoX: mobile ? width * 0.5 : width * 0.68,
+        centerY: height * 0.5,
+        photoRadius: mobile ? radius * 0.82 : radius * 0.94
+      };
+    };
+
+    const projectPoint = (lat, lon, layout) => {
+      const latitude = lat * Math.PI / 180;
+      const longitude = lon * Math.PI / 180 + rotation;
+      const visibility = Math.cos(latitude) * Math.cos(longitude);
+      return {
+        visible: visibility > -0.015,
+        x: layout.globeX + layout.radius * Math.cos(latitude) * Math.sin(longitude),
+        y: layout.centerY - layout.radius * Math.sin(latitude),
+        depth: visibility
+      };
+    };
+
+    const drawProjectedLine = (coordinates, layout, closePath = false) => {
+      let drawing = false;
+      let firstVisible = null;
+      context.beginPath();
+      coordinates.forEach(([lat, lon]) => {
+        const point = projectPoint(lat, lon, layout);
+        if (!point.visible) {
+          drawing = false;
+          return;
+        }
+        if (!firstVisible) firstVisible = point;
+        if (!drawing) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
+        drawing = true;
+      });
+      if (closePath && drawing && firstVisible) {
+        context.lineTo(firstVisible.x, firstVisible.y);
+      }
+    };
+
+    const drawGlobe = (layout, time) => {
+      const { globeX, centerY, radius } = layout;
+      const halo = context.createRadialGradient(
+        globeX - radius * 0.24,
+        centerY - radius * 0.28,
+        radius * 0.08,
+        globeX,
+        centerY,
+        radius * 1.22
+      );
+      halo.addColorStop(0, 'rgba(255, 249, 226, 0.96)');
+      halo.addColorStop(0.66, 'rgba(222, 192, 126, 0.2)');
+      halo.addColorStop(1, 'rgba(222, 192, 126, 0)');
+      context.fillStyle = halo;
+      context.beginPath();
+      context.arc(globeX, centerY, radius * 1.24, 0, Math.PI * 2);
+      context.fill();
+
+      context.save();
+      context.beginPath();
+      context.arc(globeX, centerY, radius, 0, Math.PI * 2);
+      context.clip();
+      context.fillStyle = 'rgba(255, 252, 241, 0.64)';
+      context.fillRect(globeX - radius, centerY - radius, radius * 2, radius * 2);
+
+      context.strokeStyle = 'rgba(126, 94, 42, 0.16)';
+      context.lineWidth = 0.8;
+      for (let lat = -60; lat <= 60; lat += 20) {
+        const coordinates = [];
+        for (let lon = -180; lon <= 180; lon += 3) coordinates.push([lat, lon]);
+        drawProjectedLine(coordinates, layout);
+        context.stroke();
+      }
+      for (let lon = -180; lon < 180; lon += 30) {
+        const coordinates = [];
+        for (let lat = -88; lat <= 88; lat += 2) coordinates.push([lat, lon]);
+        drawProjectedLine(coordinates, layout);
+        context.stroke();
+      }
+
+      context.fillStyle = 'rgba(204, 168, 89, 0.76)';
+      context.strokeStyle = 'rgba(54, 39, 19, 0.82)';
+      context.lineWidth = Math.max(1, radius * 0.009);
+      context.lineJoin = 'round';
+      polygons.forEach((polygon) => {
+        drawProjectedLine(polygon, layout, true);
+        context.fill();
+        context.stroke();
+      });
+
+      const hub = projectPoint(greece[0], greece[1], layout);
+      context.setLineDash([radius * 0.045, radius * 0.035]);
+      context.lineDashOffset = -(time * 0.025) % (radius * 0.08);
+      context.strokeStyle = 'rgba(49, 92, 88, 0.76)';
+      context.lineWidth = Math.max(1.8, radius * 0.014);
+      destinations.forEach(([lat, lon]) => {
+        const destination = projectPoint(lat, lon, layout);
+        if (!hub.visible || !destination.visible) return;
+        const midpointX = (hub.x + destination.x) / 2;
+        const midpointY = (hub.y + destination.y) / 2 - radius * 0.34;
+        context.beginPath();
+        context.moveTo(hub.x, hub.y);
+        context.quadraticCurveTo(midpointX, midpointY, destination.x, destination.y);
+        context.stroke();
+        context.fillStyle = 'rgba(49, 92, 88, 0.92)';
+        context.beginPath();
+        context.arc(destination.x, destination.y, Math.max(2.2, radius * 0.022), 0, Math.PI * 2);
+        context.fill();
+      });
+      context.setLineDash([]);
+      if (hub.visible) {
+        context.fillStyle = 'rgba(49, 92, 88, 0.96)';
+        context.beginPath();
+        context.arc(hub.x, hub.y, Math.max(3.2, radius * 0.032), 0, Math.PI * 2);
+        context.fill();
+      }
+      context.restore();
+
+      context.strokeStyle = 'rgba(174, 130, 54, 0.58)';
+      context.lineWidth = 1.2;
+      context.beginPath();
+      context.arc(globeX, centerY, radius, 0, Math.PI * 2);
+      context.stroke();
+    };
+
+    const drawPhoto = (layout) => {
+      if (!currentImage || imageOpacity < 0.01) return;
+      const radius = layout.photoRadius;
+      const centerX = layout.photoX;
+      const centerY = layout.centerY;
+      const diameter = radius * 2;
+      const scale = Math.max(diameter / currentImage.naturalWidth, diameter / currentImage.naturalHeight);
+      const drawWidth = currentImage.naturalWidth * scale;
+      const drawHeight = currentImage.naturalHeight * scale;
+
+      context.save();
+      context.globalAlpha = imageOpacity;
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.clip();
+      context.fillStyle = '#f7f2e6';
+      context.fillRect(centerX - radius, centerY - radius, diameter, diameter);
+      context.drawImage(
+        currentImage,
+        centerX - drawWidth / 2,
+        centerY - drawHeight / 2,
+        drawWidth,
+        drawHeight
+      );
+      context.fillStyle = 'rgba(220, 187, 112, 0.12)';
+      context.fillRect(centerX - radius, centerY - radius, diameter, diameter);
+      context.restore();
+
+      context.save();
+      context.globalAlpha = imageOpacity;
+      context.strokeStyle = 'rgba(174, 130, 54, 0.68)';
+      context.lineWidth = 1.4;
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.stroke();
+      context.restore();
+    };
+
+    setOrbState = async (item) => {
+      const request = ++imageRequest;
+      targetImageOpacity = 0;
+      const image = await loadImage(item.image);
+      if (request !== imageRequest) return;
+      currentImage = image;
+      targetImageOpacity = image ? 0.88 : 0;
+    };
+
+    refreshPortalScene = () => {
+      isRevealingAbout = false;
+      imageOpacity = 0;
+      targetImageOpacity = 0;
+      renderItem();
+      resizeFallback();
+    };
+
+    fallbackCanvas.addEventListener('pointerdown', (event) => {
+      if (width < 430) return;
+      isDragging = true;
+      lastPointerX = event.clientX;
+      fallbackCanvas.classList.add('is-dragging');
+      fallbackCanvas.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    });
+    fallbackCanvas.addEventListener('pointermove', (event) => {
+      if (!isDragging) return;
+      rotation += (event.clientX - lastPointerX) * 0.009;
+      lastPointerX = event.clientX;
+    });
+    const stopDragging = (event) => {
+      isDragging = false;
+      fallbackCanvas.classList.remove('is-dragging');
+      fallbackCanvas.releasePointerCapture?.(event.pointerId);
+    };
+    fallbackCanvas.addEventListener('pointerup', stopDragging);
+    fallbackCanvas.addEventListener('pointercancel', stopDragging);
+    fallbackCanvas.addEventListener('lostpointercapture', () => {
+      isDragging = false;
+      fallbackCanvas.classList.remove('is-dragging');
+    });
+
+    window.addEventListener('resize', resizeFallback);
+    window.addEventListener('orientationchange', resizeFallback);
+    window.addEventListener('portfolio:portal-reset', refreshPortalScene);
+    window.addEventListener('pageshow', resizeFallback);
+
+    const animateFallback = (time) => {
+      resizeFallback();
+      const delta = lastTime ? Math.min(50, time - lastTime) : 0;
+      lastTime = time;
+      if (!reducedMotion && !isDragging) rotation += delta * 0.00009;
+      imageOpacity += (targetImageOpacity - imageOpacity) * 0.075;
+      context.clearRect(0, 0, width, height);
+      const layout = getLayout();
+      drawGlobe(layout, time);
+      drawPhoto(layout);
+      window.requestAnimationFrame(animateFallback);
+    };
+
+    resizeFallback();
+    window.requestAnimationFrame(animateFallback);
+  };
+
   const revealAbout = (target = '#about') => {
     if (isRevealingAbout) return;
     isRevealingAbout = true;
@@ -188,6 +500,12 @@ const loadThree = async () => {
     event.preventDefault();
     revealAbout(items[activeIndex].href);
   });
+
+  if (!canUseWebGL()) {
+    startPortalCanvasFallback();
+    renderItem();
+    return;
+  }
 
   try {
     const THREE = await loadThree();
@@ -746,6 +1064,7 @@ const loadThree = async () => {
     animate(0);
   } catch (error) {
     console.warn('[PORTAL ORB] Three.js unavailable:', error);
+    startPortalCanvasFallback();
     renderItem();
   }
 })();
